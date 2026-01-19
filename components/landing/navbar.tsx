@@ -43,9 +43,6 @@ export function Navbar() {
             <Link href="#services" className="text-gray-300 hover:text-purple-400 transition-colors">
               Services
             </Link>
-            <Link href="#pricing" className="text-gray-300 hover:text-purple-400 transition-colors">
-              Pricing
-            </Link>
             <Link href="#" className="text-gray-300 hover:text-purple-400 transition-colors">
               About
             </Link>
@@ -82,13 +79,6 @@ export function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Services
-            </Link>
-            <Link
-              href="#pricing"
-              className="block text-gray-300 hover:text-purple-400 transition-colors"
-              onClick={() => setIsMobileMenuOpen(false)}
-            >
-              Pricing
             </Link>
             <Link
               href="#"
