@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Zap } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 
 export function HeroSection() {
@@ -75,16 +75,6 @@ export function HeroSection() {
             >
               Start Automating
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
-          </Link>
-          <Link href="#pricing">
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-purple-500/50 hover:bg-purple-500/10 px-8 py-6 text-lg"
-            >
-              <Zap className="mr-2 w-5 h-5" />
-              View Pricing
             </Button>
           </Link>
         </motion.div>
