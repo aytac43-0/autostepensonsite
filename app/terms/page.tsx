@@ -135,9 +135,11 @@ export default function TermsPage() {
               <p className="text-gray-300 leading-relaxed">
                 If you have any questions about these Terms of Service, please contact us at:
               </p>
-              <div className="mt-4 text-gray-300">
-                <p>Email: legal@autostep.com</p>
-                <p>Address: 123 Automation Street, San Francisco, CA 94105</p>
+              <div className="mt-4 text-gray-300 space-y-1">
+                <p>Email: aytac@auto-step.com</p>
+                <p>Email: hello@auto-step.com</p>
+                <p>Address: Batıgazi cad - Aydın/Efeler 09100</p>
+                <p>Phone: +90 551 355 2607</p>
               </div>
             </div>
           </div>

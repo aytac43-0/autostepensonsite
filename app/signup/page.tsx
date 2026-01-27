@@ -5,6 +5,8 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,14 +16,22 @@ export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
+
+    if (!agreedToTerms) {
+      setError("You must agree to the Terms of Service and Privacy Policy");
+      setLoading(false);
+      return;
+    }
 
     try {
       const { data, error: signUpError } = await supabase.auth.signUp({
@@ -41,7 +51,7 @@ export default function SignupPage() {
 
         if (profileError) throw profileError;
 
-        router.push("/dashboard");
+        setShowConfirmModal(true);
       }
     } catch (err: any) {
       setError(err.message || "An error occurred during signup");
@@ -120,6 +130,36 @@ export default function SignupPage() {
               </p>
             </div>
 
+            <div className="flex items-start space-x-2">
+              <Checkbox
+                id="terms"
+                checked={agreedToTerms}
+                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
+                required
+              />
+              <label
+                htmlFor="terms"
+                className="text-sm text-gray-400 leading-relaxed cursor-pointer"
+              >
+                I agree to the{" "}
+                <Link
+                  href="/terms"
+                  className="text-purple-400 hover:text-purple-300 underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link
+                  href="/privacy"
+                  className="text-purple-400 hover:text-purple-300 underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+
             {error && (
               <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
                 {error}
@@ -144,6 +184,27 @@ export default function SignupPage() {
           </p>
         </div>
       </motion.div>
+
+      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold text-center">
+              Check Your Email
+            </DialogTitle>
+            <DialogDescription className="text-center text-base pt-4">
+              Please check your email to verify your account.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={() => setShowConfirmModal(false)}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

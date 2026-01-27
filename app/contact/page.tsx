@@ -45,8 +45,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Email</h3>
-                    <p className="text-gray-400">contact@autostep.com</p>
-                    <p className="text-gray-400">support@autostep.com</p>
+                    <p className="text-gray-400">aytac@auto-step.com</p>
+                    <p className="text-gray-400">hello@auto-step.com</p>
                   </div>
                 </div>
 
@@ -56,8 +56,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Phone</h3>
-                    <p className="text-gray-400">+1 (555) 123-4567</p>
-                    <p className="text-gray-400 text-sm">Mon-Fri, 9am-6pm EST</p>
+                    <p className="text-gray-400">+90 551 355 2607</p>
                   </div>
                 </div>
 
@@ -67,8 +66,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Office</h3>
-                    <p className="text-gray-400">123 Automation Street</p>
-                    <p className="text-gray-400">San Francisco, CA 94105</p>
+                    <p className="text-gray-400">Batıgazi cad</p>
+                    <p className="text-gray-400">Aydın/Efeler 09100</p>
                   </div>
                 </div>
               </div>
