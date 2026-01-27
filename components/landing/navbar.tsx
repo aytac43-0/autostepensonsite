@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Zap, Menu, X } from "lucide-react";
+import { Zap, Menu, X, Globe } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,21 +41,29 @@ export function Navbar() {
             <span className="text-2xl font-bold">Autostep</span>
           </Link>
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex items-center gap-6">
             <Link href="#services" className="text-gray-300 hover:text-purple-400 transition-colors">
-              Services
+              {t("nav.services")}
             </Link>
-            <Link href="#" className="text-gray-300 hover:text-purple-400 transition-colors">
-              About
+            <Link href="/contact" className="text-gray-300 hover:text-purple-400 transition-colors">
+              {t("nav.contact")}
             </Link>
+            <button
+              onClick={() => setLanguage(language === "en" ? "tr" : "en")}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-card/50 hover:bg-card transition-colors text-gray-300 hover:text-purple-400 border border-border"
+              title={language === "en" ? "Türkçe" : "English"}
+            >
+              <Globe className="w-4 h-4" />
+              <span className="text-sm font-medium">{language === "en" ? "TR" : "EN"}</span>
+            </button>
             <Link href="/login">
               <Button variant="ghost" className="text-gray-300">
-                Login
+                {t("nav.login")}
               </Button>
             </Link>
             <Link href="/signup">
               <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                Get Started
+                {t("nav.getStarted")}
               </Button>
             </Link>
           </div>
@@ -78,23 +88,33 @@ export function Navbar() {
               className="block text-gray-300 hover:text-purple-400 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              Services
+              {t("nav.services")}
             </Link>
             <Link
-              href="#"
+              href="/contact"
               className="block text-gray-300 hover:text-purple-400 transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
-              About
+              {t("nav.contact")}
             </Link>
+            <button
+              onClick={() => {
+                setLanguage(language === "en" ? "tr" : "en");
+                setIsMobileMenuOpen(false);
+              }}
+              className="flex items-center gap-2 w-full px-3 py-2 rounded-lg bg-card/50 hover:bg-card transition-colors text-gray-300 hover:text-purple-400 border border-border"
+            >
+              <Globe className="w-4 h-4" />
+              <span className="text-sm font-medium">{language === "en" ? "Türkçe" : "English"}</span>
+            </button>
             <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
               <Button variant="ghost" className="w-full text-gray-300">
-                Login
+                {t("nav.login")}
               </Button>
             </Link>
             <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
               <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                Get Started
+                {t("nav.getStarted")}
               </Button>
             </Link>
           </motion.div>

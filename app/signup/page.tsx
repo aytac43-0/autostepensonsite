@@ -11,8 +11,10 @@ import { Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function SignupPage() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
@@ -28,7 +30,7 @@ export default function SignupPage() {
     setError("");
 
     if (!agreedToTerms) {
-      setError("You must agree to the Terms of Service and Privacy Policy");
+      setError(t("auth.signup.termsError"));
       setLoading(false);
       return;
     }
@@ -81,18 +83,18 @@ export default function SignupPage() {
             <span className="text-2xl font-bold">Autostep</span>
           </Link>
 
-          <h1 className="text-3xl font-bold text-center mb-2">Get Started</h1>
+          <h1 className="text-3xl font-bold text-center mb-2">{t("auth.signup.title")}</h1>
           <p className="text-gray-400 text-center mb-8">
-            Create your account to start automating
+            {t("auth.signup.subtitle")}
           </p>
 
           <form onSubmit={handleSignup} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="fullName">Full Name</Label>
+              <Label htmlFor="fullName">{t("auth.signup.fullName")}</Label>
               <Input
                 id="fullName"
                 type="text"
-                placeholder="John Doe"
+                placeholder={t("auth.signup.fullNamePlaceholder")}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
@@ -101,11 +103,11 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("auth.signup.email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("auth.signup.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -114,11 +116,11 @@ export default function SignupPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("auth.signup.password")}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t("auth.signup.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -126,7 +128,7 @@ export default function SignupPage() {
                 className="bg-background/50"
               />
               <p className="text-xs text-gray-500">
-                Must be at least 6 characters long
+                {t("auth.signup.passwordHint")}
               </p>
             </div>
 
@@ -141,21 +143,21 @@ export default function SignupPage() {
                 htmlFor="terms"
                 className="text-sm text-gray-400 leading-relaxed cursor-pointer"
               >
-                I agree to the{" "}
+                {t("auth.signup.agreeToTerms")}{" "}
                 <Link
                   href="/terms"
                   className="text-purple-400 hover:text-purple-300 underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  Terms of Service
+                  {t("auth.signup.termsLink")}
                 </Link>{" "}
-                and{" "}
+                {t("auth.signup.and")}{" "}
                 <Link
                   href="/privacy"
                   className="text-purple-400 hover:text-purple-300 underline"
                   onClick={(e) => e.stopPropagation()}
                 >
-                  Privacy Policy
+                  {t("auth.signup.privacyLink")}
                 </Link>
               </label>
             </div>
@@ -172,14 +174,14 @@ export default function SignupPage() {
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               size="lg"
             >
-              {loading ? "Creating account..." : "Create Account"}
+              {loading ? t("auth.signup.creatingAccount") : t("auth.signup.createAccount")}
             </Button>
           </form>
 
           <p className="text-center text-gray-400 mt-6">
-            Already have an account?{" "}
+            {t("auth.signup.alreadyHaveAccount")}{" "}
             <Link href="/login" className="text-purple-400 hover:text-purple-300">
-              Sign in
+              {t("auth.signup.signIn")}
             </Link>
           </p>
         </div>
@@ -189,10 +191,10 @@ export default function SignupPage() {
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold text-center">
-              Check Your Email
+              {t("auth.signup.modal.title")}
             </DialogTitle>
             <DialogDescription className="text-center text-base pt-4">
-              Please check your email to verify your account.
+              {t("auth.signup.modal.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center pt-4">
@@ -200,7 +202,7 @@ export default function SignupPage() {
               onClick={() => setShowConfirmModal(false)}
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
-              Close
+              {t("auth.signup.modal.close")}
             </Button>
           </div>
         </DialogContent>

@@ -9,8 +9,10 @@ import { Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function LoginPage() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -71,18 +73,18 @@ export default function LoginPage() {
             <span className="text-2xl font-bold">Autostep</span>
           </Link>
 
-          <h1 className="text-3xl font-bold text-center mb-2">Welcome Back</h1>
+          <h1 className="text-3xl font-bold text-center mb-2">{t("auth.login.title")}</h1>
           <p className="text-gray-400 text-center mb-8">
-            Sign in to continue to your dashboard
+            {t("auth.login.subtitle")}
           </p>
 
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email">{t("auth.login.email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="you@example.com"
+                placeholder={t("auth.login.emailPlaceholder")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -91,11 +93,11 @@ export default function LoginPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">{t("auth.login.password")}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder={t("auth.login.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -115,14 +117,14 @@ export default function LoginPage() {
               className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
               size="lg"
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? t("auth.login.signingIn") : t("auth.login.signIn")}
             </Button>
           </form>
 
           <p className="text-center text-gray-400 mt-6">
-            Don't have an account?{" "}
+            {t("auth.login.noAccount")}{" "}
             <Link href="/signup" className="text-purple-400 hover:text-purple-300">
-              Sign up
+              {t("auth.login.signUp")}
             </Link>
           </p>
         </div>

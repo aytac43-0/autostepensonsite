@@ -4,8 +4,10 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function HeroSection() {
+  const { t } = useLanguage();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -51,30 +53,37 @@ export function HeroSection() {
           className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
           variants={itemVariants}
         >
-          Streamline Your Business with{" "}
-          <span className="gradient-text">AI & n8n Automation</span>
+          {t("hero.title1")}{" "}
+          <span className="gradient-text">{t("hero.title2")}</span>
         </motion.h1>
 
         <motion.p
           className="text-xl md:text-2xl text-gray-400 mb-12 max-w-3xl mx-auto"
           variants={itemVariants}
         >
-          Let Autostep handle your repetitive tasks. We build intelligent
-          automation workflows that save time, reduce errors, and scale your
-          operations.
+          {t("hero.subtitle")}
         </motion.p>
 
         <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           variants={itemVariants}
         >
-          <Link href="/login">
+          <Link href="/signup">
             <Button
               size="lg"
               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white px-8 py-6 text-lg group"
             >
-              Start Automating
+              {t("hero.getStarted")}
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+            </Button>
+          </Link>
+          <Link href="/contact">
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-8 py-6 text-lg border-2 hover:bg-card/50"
+            >
+              {t("hero.getQuote")}
             </Button>
           </Link>
         </motion.div>

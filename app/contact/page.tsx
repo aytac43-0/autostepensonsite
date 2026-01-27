@@ -7,8 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function ContactPage() {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -28,15 +30,15 @@ export default function ContactPage() {
       <section className="pt-32 pb-20 px-4">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 text-center">
-            Get in <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">Touch</span>
+            {t("contact.title1")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-600">{t("contact.title2")}</span>
           </h1>
           <p className="text-xl text-gray-400 text-center mb-16">
-            Have a question or ready to start your automation journey? We'd love to hear from you.
+            {t("contact.subtitle")}
           </p>
 
           <div className="grid md:grid-cols-2 gap-12">
             <div>
-              <h2 className="text-3xl font-bold mb-6">Contact Information</h2>
+              <h2 className="text-3xl font-bold mb-6">{t("contact.info")}</h2>
 
               <div className="space-y-6">
                 <div className="flex items-start gap-4 bg-card/50 backdrop-blur-sm rounded-xl p-6 border border-border">

@@ -3,27 +3,38 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { MessageSquare, Wrench, Rocket } from "lucide-react";
-
-const steps = [
-  {
-    icon: MessageSquare,
-    title: "1. Tell Us Your Needs",
-    description: "Share your business challenges and automation goals through our simple request form.",
-  },
-  {
-    icon: Wrench,
-    title: "2. We Build Your Solution",
-    description: "Our experts design and implement custom AI and n8n workflows tailored to your requirements.",
-  },
-  {
-    icon: Rocket,
-    title: "3. Launch & Optimize",
-    description: "Deploy your automation and enjoy continuous monitoring and optimization for peak performance.",
-  },
-];
+import { MessageSquare, Wrench, Rocket, HeadphonesIcon } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function HowItWorksSection() {
+  const { t } = useLanguage();
+
+  const steps = [
+    {
+      icon: MessageSquare,
+      titleKey: "howItWorks.step1.title",
+      descriptionKey: "howItWorks.step1.description",
+      number: "1",
+    },
+    {
+      icon: Wrench,
+      titleKey: "howItWorks.step2.title",
+      descriptionKey: "howItWorks.step2.description",
+      number: "2",
+    },
+    {
+      icon: Rocket,
+      titleKey: "howItWorks.step3.title",
+      descriptionKey: "howItWorks.step3.description",
+      number: "3",
+    },
+    {
+      icon: HeadphonesIcon,
+      titleKey: "howItWorks.step4.title",
+      descriptionKey: "howItWorks.step4.description",
+      number: "4",
+    },
+  ];
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -37,17 +48,17 @@ export function HowItWorksSection() {
           className="text-center mb-20"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            How It <span className="gradient-text">Works</span>
+            {t("howItWorks.title")}
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Get started with automation in three simple steps
+            {t("howItWorks.subtitle")}
           </p>
         </motion.div>
 
         <div className="relative">
           <div className="hidden lg:block absolute top-12 left-0 right-0 h-1 bg-gradient-to-r from-purple-600 via-violet-600 to-blue-600" />
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 lg:gap-8 relative">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-6 relative">
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
@@ -67,9 +78,9 @@ export function HowItWorksSection() {
                     >
                       <Icon className="w-12 h-12 text-white" />
                     </motion.div>
-                    <h3 className="text-2xl font-bold mb-4">{step.title}</h3>
-                    <p className="text-gray-400 text-lg max-w-sm">
-                      {step.description}
+                    <h3 className="text-2xl font-bold mb-4">{t(step.titleKey)}</h3>
+                    <p className="text-gray-400 text-base max-w-xs">
+                      {t(step.descriptionKey)}
                     </p>
                   </div>
                 </motion.div>
@@ -77,17 +88,6 @@ export function HowItWorksSection() {
             })}
           </div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-          transition={{ duration: 0.6, delay: 0.8 }}
-          className="text-center mt-16"
-        >
-          <p className="text-lg text-gray-400 mb-6">
-            Join hundreds of businesses already automating with Autostep
-          </p>
-        </motion.div>
       </div>
     </section>
   );

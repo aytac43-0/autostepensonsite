@@ -3,42 +3,29 @@
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
 import { useRef } from "react";
-import { Bot, Workflow, Database, Mail, Calendar, BarChart } from "lucide-react";
-
-const services = [
-  {
-    icon: Bot,
-    title: "AI Integration",
-    description: "Integrate cutting-edge AI models into your workflows for intelligent automation and decision-making.",
-  },
-  {
-    icon: Workflow,
-    title: "Custom Workflows",
-    description: "Build tailored n8n workflows that perfectly match your business processes and requirements.",
-  },
-  {
-    icon: Database,
-    title: "Data Automation",
-    description: "Automate data collection, processing, and syncing across all your business tools seamlessly.",
-  },
-  {
-    icon: Mail,
-    title: "Email Automation",
-    description: "Set up intelligent email sequences, notifications, and responses that run on autopilot.",
-  },
-  {
-    icon: Calendar,
-    title: "Scheduling & Reminders",
-    description: "Never miss important tasks with automated scheduling, reminders, and follow-ups.",
-  },
-  {
-    icon: BarChart,
-    title: "Reporting & Analytics",
-    description: "Get automated reports and insights delivered to your inbox on your schedule.",
-  },
-];
+import { Bot, Workflow, Lightbulb } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export function ServicesSection() {
+  const { t } = useLanguage();
+
+  const services = [
+    {
+      icon: Workflow,
+      titleKey: "services.workflow.title",
+      descriptionKey: "services.workflow.description",
+    },
+    {
+      icon: Bot,
+      titleKey: "services.ai.title",
+      descriptionKey: "services.ai.description",
+    },
+    {
+      icon: Lightbulb,
+      titleKey: "services.consulting.title",
+      descriptionKey: "services.consulting.description",
+    },
+  ];
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -74,10 +61,10 @@ export function ServicesSection() {
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-4">
-            Our <span className="gradient-text">Services</span>
+            {t("services.title")}
           </h2>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-            Comprehensive automation solutions tailored to your business needs
+            {t("services.subtitle")}
           </p>
         </motion.div>
 
@@ -99,8 +86,8 @@ export function ServicesSection() {
                 <div className="w-14 h-14 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                   <Icon className="w-7 h-7 text-white" />
                 </div>
-                <h3 className="text-xl font-semibold mb-3">{service.title}</h3>
-                <p className="text-gray-400">{service.description}</p>
+                <h3 className="text-xl font-semibold mb-3">{t(service.titleKey)}</h3>
+                <p className="text-gray-400">{t(service.descriptionKey)}</p>
               </motion.div>
             );
           })}
