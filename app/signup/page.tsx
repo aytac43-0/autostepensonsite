@@ -30,29 +30,30 @@ export default function SignupPage() {
     setError("");
 
     if (!agreedToTerms) {
-      setError(t("auth.signup.termsError"));
+      setError(t("auth.signup.termsError") || "Lütfen şartları kabul edin.");
       setLoading(false);
       return;
     }
 
     try {
+      // 1. Kritik Değişiklik: full_name'i metadata olarak gönderiyoruz
+      // Böylece SQL Trigger'ımız bunu yakalayıp profili oluşturacak.
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            full_name: fullName, // İsim bilgisi burada gidiyor
+          },
+        },
       });
 
       if (signUpError) throw signUpError;
 
+      // 2. Değişiklik: Manuel profil oluşturma kodunu kaldırdık.
+      // Çünkü SQL trigger bunu otomatik yapıyor. Burası çakışma yaratıyordu.
+
       if (data.user) {
-        const { error: profileError } = await (supabase as any).from("profiles").insert({
-          id: data.user.id,
-          email,
-          full_name: fullName,
-          role: "client",
-        });
-
-        if (profileError) throw profileError;
-
         setShowConfirmModal(true);
       }
     } catch (err: any) {
@@ -64,6 +65,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
+      {/* Arkaplan Efektleri */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-1/2 -left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
         <div className="absolute -bottom-1/2 -right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
@@ -89,12 +91,13 @@ export default function SignupPage() {
           </p>
 
           <form onSubmit={handleSignup} className="space-y-6">
+            {/* İsim Kutusu */}
             <div className="space-y-2">
               <Label htmlFor="fullName">{t("auth.signup.fullName")}</Label>
               <Input
                 id="fullName"
                 type="text"
-                placeholder={t("auth.signup.fullNamePlaceholder")}
+                placeholder={t("auth.signup.fullNamePlaceholder") || "John Doe"}
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 required
@@ -102,12 +105,13 @@ export default function SignupPage() {
               />
             </div>
 
+            {/* Email Kutusu */}
             <div className="space-y-2">
               <Label htmlFor="email">{t("auth.signup.email")}</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder={t("auth.signup.emailPlaceholder")}
+                placeholder={t("auth.signup.emailPlaceholder") || "name@example.com"}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -115,12 +119,13 @@ export default function SignupPage() {
               />
             </div>
 
+            {/* Şifre Kutusu */}
             <div className="space-y-2">
               <Label htmlFor="password">{t("auth.signup.password")}</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder={t("auth.signup.passwordPlaceholder")}
+                placeholder={t("auth.signup.passwordPlaceholder") || "******"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -132,6 +137,7 @@ export default function SignupPage() {
               </p>
             </div>
 
+            {/* Şartlar Checkbox */}
             <div className="flex items-start space-x-2">
               <Checkbox
                 id="terms"
@@ -162,12 +168,14 @@ export default function SignupPage() {
               </label>
             </div>
 
+            {/* Hata Mesajı */}
             {error && (
               <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
                 {error}
               </div>
             )}
 
+            {/* Buton */}
             <Button
               type="submit"
               disabled={loading}
@@ -187,6 +195,7 @@ export default function SignupPage() {
         </div>
       </motion.div>
 
+      {/* Onay Modalı */}
       <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
