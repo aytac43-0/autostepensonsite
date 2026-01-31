@@ -1,5 +1,8 @@
 "use client";
 
+// BU SATIR HATALARI ENGELLER:
+export const dynamic = "force-dynamic";
+
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -10,12 +13,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
-// İçeriği Yöneten Parça
+// --- İçerik Yönetimi ---
 function DashboardContent() {
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'overview';
 
-  // --- SEKME 1: GENEL BAKIŞ ---
+  // 1. GENEL BAKIŞ
   const OverviewTab = () => (
     <div className="space-y-8">
       <div>
@@ -39,7 +42,7 @@ function DashboardContent() {
     </div>
   );
 
-  // --- SEKME 2: SİPARİŞ SORGULA ---
+  // 2. SİPARİŞ TAKİBİ
   const TrackingTab = () => {
     const [code, setCode] = useState("");
     const [result, setResult] = useState<any>(null);
@@ -71,7 +74,7 @@ function DashboardContent() {
     );
   };
 
-  // --- SEKME 3: ÖDEMELER ---
+  // 3. ÖDEMELER
   const PaymentsTab = () => (
     <div className="space-y-6 max-w-4xl">
          <div><h2 className="text-2xl font-bold">Ödemeler & Finans</h2></div>
@@ -93,7 +96,7 @@ function DashboardContent() {
     </div>
   );
 
-  // --- SEKME 4: VERİ KASASI ---
+  // 4. VERİ KASASI
   const FilesTab = () => (
     <div className="space-y-6 max-w-4xl">
         <div><h2 className="text-2xl font-bold">Veri Kasası</h2></div>
@@ -118,7 +121,7 @@ function DashboardContent() {
   );
 }
 
-// Ana Sayfa (Suspense Koruması Eklendi)
+// --- Ana Sayfa ---
 export default function DashboardPage() {
   return (
     <Suspense fallback={<div className="p-8">Yükleniyor...</div>}>
