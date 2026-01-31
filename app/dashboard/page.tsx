@@ -1,203 +1,180 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
-  Search, 
-  CreditCard, 
-  Database, 
-  Package, 
-  Clock, 
-  CheckCircle,
+  Search, CreditCard, Database, Package, Clock, CheckCircle, Zap, Shield, HelpCircle 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function DashboardPage() {
-  const { t } = useLanguage();
-  const [productCode, setProductCode] = useState("");
-  const [searchResult, setSearchResult] = useState<any>(null);
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'overview'; // Varsayılan: overview
 
-  // Bu fonksiyon şimdilik "demo" amaçlı çalışır.
-  // İleride burayı Supabase veritabanına bağlayıp gerçek sipariş durumunu çekeceğiz.
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if(productCode) {
-      // Demo: Kullanıcı ne yazarsa yazsın şimdilik bu sonucu gösteriyoruz
-      setSearchResult({
-        code: productCode,
-        name: "Özel Otomasyon Projesi",
-        status: "Geliştiriliyor",
-        progress: 65 
-      });
-    }
+  // --- SEKME 1: GENEL BAKIŞ (OVERVIEW) ---
+  const OverviewTab = () => (
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Hoş Geldiniz</h1>
+        <p className="text-muted-foreground">Dijital operasyonlarınızın kontrol merkezi.</p>
+      </div>
+      
+      {/* Özet Kartları */}
+      <div className="grid md:grid-cols-3 gap-6">
+        <Card className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border-purple-500/20">
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Aktif Projeler</CardTitle></CardHeader>
+            <CardContent><div className="text-3xl font-bold">2</div></CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/20">
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Tamamlanan İşler</CardTitle></CardHeader>
+            <CardContent><div className="text-3xl font-bold">14</div></CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/20">
+            <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Bekleyen Ödeme</CardTitle></CardHeader>
+            <CardContent><div className="text-3xl font-bold">₺15,000</div></CardContent>
+        </Card>
+      </div>
+
+      {/* Hızlı Erişim */}
+      <div className="grid md:grid-cols-2 gap-6">
+          <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => window.location.href='/dashboard?tab=tracking'}>
+              <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Search className="w-5 h-5 text-purple-500"/> Siparişim Nerede?</CardTitle>
+                  <CardDescription>Aktif projenizin durumunu hemen sorgulayın.</CardDescription>
+              </CardHeader>
+          </Card>
+          <Card className="cursor-pointer hover:bg-accent/50 transition-colors" onClick={() => window.location.href='/dashboard?tab=files'}>
+              <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Database className="w-5 h-5 text-blue-500"/> Dosya Yükle</CardTitle>
+                  <CardDescription>Veri setlerinizi ve görsellerinizi kasaya ekleyin.</CardDescription>
+              </CardHeader>
+          </Card>
+      </div>
+    </div>
+  );
+
+  // --- SEKME 2: SİPARİŞ SORGULA (TRACKING) ---
+  const TrackingTab = () => {
+    const [code, setCode] = useState("");
+    const [result, setResult] = useState<any>(null);
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault();
+        if(code) setResult({ name: "Instagram DM Botu V2", status: "Kodlanıyor", progress: 45 });
+    };
+
+    return (
+        <div className="space-y-6 max-w-3xl">
+            <div>
+                <h2 className="text-2xl font-bold">Sipariş Takibi</h2>
+                <p className="text-muted-foreground">Ürün kodunuzu girerek canlı durumu izleyin.</p>
+            </div>
+            <Card>
+                <CardContent className="pt-6">
+                    <form onSubmit={handleSearch} className="flex gap-4 mb-6">
+                        <Input placeholder="Ürün Kodu (Örn: AUTO-88)" value={code} onChange={e=>setCode(e.target.value)} className="bg-background"/>
+                        <Button type="submit">Sorgula</Button>
+                    </form>
+                    {result && (
+                        <motion.div initial={{opacity:0}} animate={{opacity:1}} className="p-4 bg-secondary/30 rounded-lg border">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-bold text-lg">{result.name}</h3>
+                                <span className="px-3 py-1 rounded-full bg-yellow-500/20 text-yellow-500 text-sm font-medium">{result.status}</span>
+                            </div>
+                            <div className="h-3 bg-secondary rounded-full overflow-hidden">
+                                <div className="h-full bg-purple-600 transition-all duration-1000" style={{width: `${result.progress}%`}}/>
+                            </div>
+                            <p className="text-right text-sm text-muted-foreground mt-2">%{result.progress} Tamamlandı</p>
+                        </motion.div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
+    );
   };
 
-  return (
-    <div className="p-8 max-w-7xl mx-auto space-y-8">
-      
-      {/* 1. ÜST BAŞLIK */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+  // --- SEKME 3: ÖDEMELER (PAYMENTS) ---
+  const PaymentsTab = () => (
+    <div className="space-y-6 max-w-4xl">
+         <div>
+            <h2 className="text-2xl font-bold">Ödemeler & Finans</h2>
+            <p className="text-muted-foreground">Açık faturalarınızı ve ödeme geçmişinizi görüntüleyin.</p>
+        </div>
+        <Card>
+            <CardHeader><CardTitle>Bekleyen Ödemeler</CardTitle></CardHeader>
+            <CardContent className="space-y-4">
+                <div className="flex items-center justify-between p-4 border rounded-lg bg-red-500/5 border-red-500/20">
+                    <div className="flex items-center gap-4">
+                        <div className="p-2 bg-red-500/10 rounded-full"><Clock className="w-5 h-5 text-red-500"/></div>
+                        <div>
+                            <p className="font-bold">Web Otomasyon Kurulumu</p>
+                            <p className="text-xs text-muted-foreground">Son Ödeme: 05.02.2026</p>
+                        </div>
+                    </div>
+                    <div className="text-right">
+                        <p className="font-bold text-lg">₺15,000</p>
+                        <Button size="sm" className="mt-1">Ödeme Yap</Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    </div>
+  );
+
+  // --- SEKME 4: VERİ KASASI (FILES) ---
+  const FilesTab = () => (
+    <div className="space-y-6 max-w-4xl">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Müşteri Portalı</h1>
-          <p className="text-muted-foreground">
-            Sipariş durumunu sorgula, ödemelerini yönet ve veri dosyalarını yükle.
-          </p>
+            <h2 className="text-2xl font-bold">Veri Kasası</h2>
+            <p className="text-muted-foreground">Projeleriniz için gerekli dosyaları güvenle yükleyin.</p>
         </div>
-        <div className="flex gap-2">
-          <Button variant="outline">Destek Al</Button>
-          <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-            Yeni Sipariş Oluştur
-          </Button>
-        </div>
-      </div>
-
-      {/* 2. SİPARİŞ SORGULAMA (Arama Motoru) */}
-      <Card className="border-purple-500/20 bg-gradient-to-r from-purple-500/5 to-blue-500/5">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Search className="w-5 h-5 text-purple-500" />
-            Sipariş Durumu Sorgula
-          </CardTitle>
-          <CardDescription>
-            Size verilen <strong>Ürün Kodu</strong> (Örn: AUTO-88) ile projenizin hangi aşamada olduğunu görün.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSearch} className="flex gap-4">
-            <Input 
-              placeholder="Ürün Kodu Giriniz..." 
-              className="max-w-md bg-background"
-              value={productCode}
-              onChange={(e) => setProductCode(e.target.value)}
-            />
-            <Button type="submit">Sorgula</Button>
-          </form>
-
-          {/* Arama Sonucu Animasyonu */}
-          {searchResult && (
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6 p-4 border rounded-lg bg-background/80 backdrop-blur-sm"
-            >
-              <div className="flex items-center justify-between mb-4">
-                <div>
-                  <h3 className="font-semibold text-lg">{searchResult.name}</h3>
-                  <p className="text-xs text-muted-foreground">Kod: {searchResult.code}</p>
+        <Card className="border-dashed border-2 border-muted hover:bg-accent/20 transition-colors cursor-pointer group">
+            <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                <div className="w-16 h-16 rounded-full bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Package className="w-8 h-8 text-blue-500"/>
                 </div>
-                <span className="px-3 py-1 bg-yellow-500/10 text-yellow-600 rounded-full text-sm font-medium border border-yellow-200">
-                  ⚡ {searchResult.status}
-                </span>
-              </div>
-              
-              {/* İlerleme Çubuğu */}
-              <div className="w-full bg-secondary h-3 rounded-full overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-purple-600 to-blue-600 h-full transition-all duration-1000 ease-out" 
-                  style={{ width: `${searchResult.progress}%` }}
-                />
-              </div>
-              <div className="flex justify-between mt-2 text-xs text-muted-foreground">
-                <span>Başlangıç</span>
-                <span className="font-bold text-foreground">%{searchResult.progress} Tamamlandı</span>
-                <span>Teslimat</span>
-              </div>
-            </motion.div>
-          )}
-        </CardContent>
-      </Card>
-
-      <div className="grid md:grid-cols-2 gap-6">
+                <h3 className="font-bold text-lg">Dosya Yüklemek İçin Tıklayın</h3>
+                <p className="text-muted-foreground text-sm">veya buraya sürükleyip bırakın (Excel, PDF, PNG)</p>
+            </CardContent>
+        </Card>
         
-        {/* 3. FİNANS MERKEZİ */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-green-600" />
-              Ödemeler & Faturalar
-            </CardTitle>
-            <CardDescription>Bekleyen ve tamamlanan ödemeleriniz.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Örnek Bekleyen Ödeme */}
-            <div className="flex items-center justify-between p-3 border rounded-lg bg-card hover:bg-accent/50 transition-colors cursor-pointer group">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                  <Clock className="w-5 h-5 text-red-600" />
+        <div className="space-y-2">
+            <h3 className="text-sm font-medium text-muted-foreground">Yüklü Dosyalar</h3>
+            <div className="flex items-center justify-between p-3 bg-secondary/30 rounded-lg">
+                <div className="flex items-center gap-3">
+                    <Database className="w-4 h-4 text-purple-500"/>
+                    <span className="text-sm">musteri_listesi.xlsx</span>
                 </div>
-                <div>
-                  <p className="font-medium group-hover:text-purple-600 transition-colors">Web Otomasyon Kurulumu</p>
-                  <p className="text-xs text-muted-foreground">Vade: 05.02.2026</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-bold">₺15,000</p>
-                <Button size="sm" variant="secondary" className="mt-1 h-7 text-xs">
-                  Ödeme Yap
-                </Button>
-              </div>
+                <span className="text-xs text-muted-foreground">2.4 MB</span>
             </div>
+        </div>
+    </div>
+  );
 
-            {/* Örnek Tamamlanmış Ödeme */}
-            <div className="flex items-center justify-between p-3 border rounded-lg bg-card opacity-60 grayscale hover:grayscale-0 transition-all">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
-                </div>
-                <div>
-                  <p className="font-medium">Danışmanlık Hizmeti</p>
-                  <p className="text-xs text-muted-foreground">Ödendi: 28.01.2026</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-bold">₺2,500</p>
-                <span className="text-xs text-green-600 font-medium">Ödendi</span>
-              </div>
+  // --- İÇERİK SEÇİCİ (ROUTER) ---
+  return (
+    <div className="p-8">
+      <motion.div
+        key={activeTab} // Tab değişince animasyon çalışsın
+        initial={{ opacity: 0, x: 10 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {activeTab === 'overview' && <OverviewTab />}
+        {activeTab === 'tracking' && <TrackingTab />}
+        {activeTab === 'payments' && <PaymentsTab />}
+        {activeTab === 'files' && <FilesTab />}
+        {activeTab === 'support' && (
+            <div className="text-center py-20">
+                <HelpCircle className="w-16 h-16 mx-auto text-muted-foreground mb-4"/>
+                <h2 className="text-2xl font-bold">Destek Merkezi</h2>
+                <p className="text-muted-foreground">Yakında burada canlı destek olacak.</p>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* 4. VERİ KASASI (Data Vault) */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="w-5 h-5 text-blue-600" />
-              Veri Kasası
-            </CardTitle>
-            <CardDescription>Otomasyon için gerekli dosyaları buraya yükleyin.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            
-            {/* Yükleme Alanı */}
-            <div className="p-6 border-2 border-dashed border-muted-foreground/25 rounded-xl flex flex-col items-center justify-center text-center space-y-2 hover:bg-accent/50 hover:border-purple-500/50 cursor-pointer transition-all group">
-              <div className="w-12 h-12 rounded-full bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Package className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="font-medium text-sm">Dosya Yüklemek İçin Tıklayın</p>
-                <p className="text-xs text-muted-foreground">Excel, PDF, PNG (Max 50MB)</p>
-              </div>
-            </div>
-
-            {/* Yüklü Dosyalar Listesi */}
-            <div className="space-y-2 pt-2">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Yüklü Dosyalar</h4>
-              <div className="flex items-center justify-between text-sm p-3 bg-secondary/30 rounded-lg hover:bg-secondary/50 transition-colors">
-                <span className="flex items-center gap-2">
-                  <Database className="w-4 h-4 text-purple-500" />
-                  hedef_kitle_listesi.xlsx
-                </span>
-                <span className="text-xs font-mono text-muted-foreground">2.4 MB</span>
-              </div>
-            </div>
-
-          </CardContent>
-        </Card>
-
-      </div>
+        )}
+      </motion.div>
     </div>
   );
 }
