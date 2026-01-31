@@ -1,5 +1,8 @@
 "use client";
 
+// BU SATIR HATALARI ENGELLER:
+export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { 
@@ -15,7 +18,7 @@ import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 
-// Menü İçeriğini Ayrı Parça Yaptık (Hata Vermemesi İçin)
+// --- Yan Menü Bileşeni ---
 function DashboardSidebar() {
   const searchParams = useSearchParams();
   const currentTab = searchParams.get('tab') || 'overview';
@@ -44,6 +47,7 @@ function DashboardSidebar() {
 
   return (
     <aside className="w-64 bg-card border-r border-border flex flex-col h-full">
+      {/* Logo */}
       <div className="p-6 border-b border-border/50">
         <div className="flex items-center gap-2 font-bold text-xl">
           <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
@@ -53,6 +57,7 @@ function DashboardSidebar() {
         </div>
       </div>
 
+      {/* Linkler */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = currentTab === item.key;
@@ -73,6 +78,7 @@ function DashboardSidebar() {
         })}
       </nav>
 
+      {/* Alt Kısım */}
       <div className="p-4 border-t border-border/50 space-y-4">
         <div className="bg-secondary/30 rounded-lg p-3 flex items-center justify-between">
             <div className="flex items-center gap-2 overflow-hidden">
@@ -93,7 +99,7 @@ function DashboardSidebar() {
   );
 }
 
-// Ana Layout (Suspense Koruması Eklendi)
+// --- Ana Layout ---
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-background">
