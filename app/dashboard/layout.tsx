@@ -1,6 +1,5 @@
 "use client";
 
-// Vercel hatasını önleyen sihirli satır:
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
@@ -10,26 +9,23 @@ import {
   LayoutDashboard, 
   Search, 
   CreditCard, 
-  Database, 
   LogOut,
-  User,
-  LifeBuoy
+  User
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
-// Menü Linklerini Burada Tanımlıyoruz
+// "Veri Kasası" (Database ikonu) buradan kaldırıldı
 const menuItems = [
   { label: "Genel Bakış", icon: LayoutDashboard, key: "overview" },
   { label: "Sipariş Takibi", icon: Search, key: "tracking" },
   { label: "Ödemeler & Finans", icon: CreditCard, key: "payments" },
-  { label: "Veri Kasası", icon: Database, key: "files" },
 ];
 
 function SidebarContent() {
   const searchParams = useSearchParams();
-  const currentTab = searchParams.get('tab') || 'overview'; // Varsayılan sekme
+  const currentTab = searchParams.get('tab') || 'overview';
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -39,7 +35,6 @@ function SidebarContent() {
 
   return (
     <div className="flex flex-col h-full bg-card border-r border-border">
-      {/* Logo Alanı */}
       <div className="p-6 border-b border-border/50">
         <div className="flex items-center gap-2 font-bold text-xl">
           <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
@@ -49,7 +44,6 @@ function SidebarContent() {
         </div>
       </div>
 
-      {/* Menü Linkleri */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = currentTab === item.key;
@@ -70,7 +64,6 @@ function SidebarContent() {
         })}
       </nav>
 
-      {/* Alt Kısım (User & Logout) */}
       <div className="p-4 border-t border-border/50 space-y-4">
         <div className="bg-secondary/30 rounded-lg p-3 flex items-center justify-between">
             <div className="flex items-center gap-2 overflow-hidden">
@@ -91,7 +84,6 @@ function SidebarContent() {
   );
 }
 
-// Ana Layout (Hata vermemesi için Suspense içine aldık)
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-background">
@@ -100,9 +92,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <SidebarContent />
         </Suspense>
       </aside>
-      
       <main className="flex-1 overflow-y-auto bg-background/50 relative">
-         {/* Arkaplan Süsü */}
          <div className="absolute top-0 left-0 w-full h-96 bg-gradient-to-b from-purple-900/10 to-transparent -z-10 pointer-events-none" />
         {children}
       </main>
