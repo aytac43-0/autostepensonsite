@@ -1,6 +1,5 @@
 "use client";
 
-// Vercel hatasını önleyen kod:
 export const dynamic = "force-dynamic";
 
 import Link from "next/link";
@@ -10,7 +9,8 @@ import {
   ShieldCheck, 
   Users, 
   FileText, 
-  Database, // Veri kasası ikonu
+  Database,
+  ShoppingBag, // YENİ İKON: Ürünler için
   LogOut,
   User
 } from "lucide-react";
@@ -18,11 +18,12 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useRouter } from "next/navigation";
 
-// Admin Menüsü
+// Menüye "products" eklendi
 const menuItems = [
   { label: "Yönetim Merkezi", icon: ShieldCheck, key: "overview" },
+  { label: "Ürünler & Hizmetler", icon: ShoppingBag, key: "products" }, // YENİ
   { label: "Müşteri Talepleri", icon: FileText, key: "requests" },
-  { label: "Dosya & Veri Kasası", icon: Database, key: "files" }, // YENİ EKLENEN
+  { label: "Dosya & Veri Kasası", icon: Database, key: "files" },
   { label: "Müşteriler", icon: Users, key: "users" },
 ];
 
@@ -38,7 +39,6 @@ function AdminSidebar() {
 
   return (
     <div className="flex flex-col h-full bg-slate-950 border-r border-slate-800 text-white">
-      {/* Logo */}
       <div className="p-6 border-b border-slate-800">
         <div className="flex items-center gap-2 font-bold text-xl">
           <div className="w-8 h-8 bg-red-600 rounded-lg flex items-center justify-center">
@@ -48,7 +48,6 @@ function AdminSidebar() {
         </div>
       </div>
 
-      {/* Menü Linkleri */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
         {menuItems.map((item) => {
           const isActive = currentTab === item.key;
@@ -69,7 +68,6 @@ function AdminSidebar() {
         })}
       </nav>
 
-      {/* Alt Kısım */}
       <div className="p-4 border-t border-slate-800 space-y-4">
         <div className="bg-slate-900 rounded-lg p-3 flex items-center justify-between">
             <div className="flex items-center gap-2 overflow-hidden">
@@ -90,7 +88,6 @@ function AdminSidebar() {
   );
 }
 
-// Ana Layout
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen bg-slate-950 text-white">
