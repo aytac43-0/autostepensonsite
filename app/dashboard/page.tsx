@@ -1,23 +1,22 @@
 "use client";
 
-// Vercel hatasını önleyen sihirli satır:
 export const dynamic = "force-dynamic";
 
 import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
-  Search, CreditCard, Database, Package, Clock, CheckCircle
+  Search, CreditCard, Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 function DashboardContent() {
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'overview'; // URL'den hangi sekmede olduğumuzu okur
+  const activeTab = searchParams.get('tab') || 'overview';
 
-  // --- 1. SEKME: GENEL BAKIŞ SAYFASI ---
+  // --- 1. SEKME: GENEL BAKIŞ ---
   if (activeTab === 'overview') {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-8">
@@ -44,7 +43,7 @@ function DashboardContent() {
     );
   }
 
-  // --- 2. SEKME: SİPARİŞ TAKİBİ SAYFASI ---
+  // --- 2. SEKME: SİPARİŞ TAKİBİ ---
   if (activeTab === 'tracking') {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-6">
@@ -67,7 +66,7 @@ function DashboardContent() {
     );
   }
 
-  // --- 3. SEKME: ÖDEMELER SAYFASI ---
+  // --- 3. SEKME: ÖDEMELER ---
   if (activeTab === 'payments') {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-6">
@@ -97,31 +96,9 @@ function DashboardContent() {
     );
   }
 
-  // --- 4. SEKME: VERİ KASASI SAYFASI ---
-  if (activeTab === 'files') {
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2"><Database className="w-6 h-6 text-blue-500"/> Veri Kasası</h2>
-            <p className="text-muted-foreground">Projeleriniz için gerekli dosyaları yükleyin.</p>
-        </div>
-        <Card className="border-dashed border-2 hover:bg-accent/20 cursor-pointer transition-colors">
-            <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
-                    <Package className="w-8 h-8 text-blue-500"/>
-                </div>
-                <h3 className="font-bold text-lg">Dosya Yüklemek İçin Tıklayın</h3>
-                <p className="text-muted-foreground text-sm mt-1">Excel, PDF, Görsel (Max 50MB)</p>
-            </CardContent>
-        </Card>
-      </motion.div>
-    );
-  }
-
   return null;
 }
 
-// Ana Sayfa (Hata vermemesi için Suspense ile sarıldı)
 export default function DashboardPage() {
   return (
     <Suspense fallback={<div className="p-8">Yükleniyor...</div>}>
