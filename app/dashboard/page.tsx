@@ -6,93 +6,147 @@ import { useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { 
-  Search, CreditCard, Clock
+  Search, CreditCard, ShoppingCart, CheckCircle, AlertCircle, Loader2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/lib/supabase";
 
 function DashboardContent() {
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'overview';
 
+  // --- ARAMA STATE'LERİ ---
+  const [searchCode, setSearchCode] = useState("");
+  const [foundProduct, setFoundProduct] = useState<any>(null);
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
+  // ÜRÜN ARAMA FONKSİYONU
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFoundProduct(null);
+    setErrorMsg("");
+    setSearchLoading(true);
+
+    // 1. Kodu kontrol et (AUTO-123 formatında mı?)
+    if (!searchCode.toUpperCase().startsWith("AUTO-")) {
+        setErrorMsg("Lütfen geçerli bir ürün kodu girin (Örn: AUTO-15)");
+        setSearchLoading(false);
+        return;
+    }
+
+    // 2. ID'yi ayıkla (AUTO-15 -> 15)
+    const productId = searchCode.split("-")[1];
+
+    // 3. Veritabanından sor
+    const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', productId)
+        .single();
+
+    if (error || !data) {
+        setErrorMsg("Ürün bulunamadı. Kodu kontrol edip tekrar deneyin.");
+    } else {
+        setFoundProduct(data);
+    }
+    setSearchLoading(false);
+  };
+
+  // SATIN ALMA FONKSİYONU (Şimdilik Demo)
+  const handleBuy = (productName: string) => {
+    alert(`"${productName}" için sipariş talebiniz alındı! Yöneticiler sizinle iletişime geçecek.`);
+    // İleride burayı 'orders' tablosuna kayıt atacak şekilde güncelleyeceğiz.
+  };
+
   // --- 1. SEKME: GENEL BAKIŞ ---
   if (activeTab === 'overview') {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Hoş Geldiniz</h1>
-          <p className="text-muted-foreground">Dijital operasyonlarınızın özet durumu.</p>
-        </div>
-        
+        <div><h1 className="text-3xl font-bold">Hoş Geldiniz</h1><p className="text-muted-foreground">Kontrol paneli.</p></div>
+        {/* Özet Kartları (Demo) */}
         <div className="grid md:grid-cols-3 gap-6">
-          <Card className="bg-gradient-to-br from-purple-500/10 to-blue-500/10 border-purple-500/20">
-              <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Aktif Projeler</CardTitle></CardHeader>
-              <CardContent><div className="text-3xl font-bold">2</div></CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border-green-500/20">
-              <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Tamamlanan</CardTitle></CardHeader>
-              <CardContent><div className="text-3xl font-bold">14</div></CardContent>
-          </Card>
-          <Card className="bg-gradient-to-br from-orange-500/10 to-red-500/10 border-orange-500/20">
-              <CardHeader className="pb-2"><CardTitle className="text-sm font-medium text-muted-foreground">Bekleyen Ödeme</CardTitle></CardHeader>
-              <CardContent><div className="text-3xl font-bold">₺15,000</div></CardContent>
-          </Card>
+          <Card><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Aktif İşler</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold">0</div></CardContent></Card>
         </div>
       </motion.div>
     );
   }
 
-  // --- 2. SEKME: SİPARİŞ TAKİBİ ---
+  // --- 2. SEKME: ÜRÜN/SİPARİŞ ARAMA (GÜNCELLENEN KISIM) ---
   if (activeTab === 'tracking') {
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-6">
         <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2"><Search className="w-6 h-6 text-purple-500"/> Sipariş Takibi</h2>
-            <p className="text-muted-foreground">Ürün kodunuzu girerek durumu sorgulayın.</p>
+            <h2 className="text-2xl font-bold flex items-center gap-2"><Search className="w-6 h-6 text-purple-500"/> Ürün & Sipariş Arama</h2>
+            <p className="text-muted-foreground">Size verilen kodu (Örn: AUTO-12) girerek ürünü görüntüleyin.</p>
         </div>
-        <Card>
+        
+        <Card className="border-purple-500/20">
             <CardContent className="pt-6">
-                <div className="flex gap-4 max-w-md">
-                    <Input placeholder="Ürün Kodu Giriniz (Örn: AUTO-88)" className="bg-background"/>
-                    <Button>Sorgula</Button>
-                </div>
-                <div className="mt-8 p-6 border border-dashed rounded-lg text-center text-muted-foreground">
-                    Henüz bir sorgulama yapmadınız.
-                </div>
+                <form onSubmit={handleSearch} className="flex gap-4 max-w-lg mb-4">
+                    <Input 
+                        placeholder="Kodu Giriniz (AUTO-...)" 
+                        className="bg-background"
+                        value={searchCode}
+                        onChange={(e) => setSearchCode(e.target.value.toUpperCase())}
+                    />
+                    <Button type="submit" disabled={searchLoading}>
+                        {searchLoading ? <Loader2 className="animate-spin w-4 h-4"/> : "Ara"}
+                    </Button>
+                </form>
+
+                {/* HATA MESAJI */}
+                {errorMsg && (
+                    <div className="p-4 bg-red-500/10 text-red-500 rounded-lg flex items-center gap-2 text-sm">
+                        <AlertCircle className="w-4 h-4"/> {errorMsg}
+                    </div>
+                )}
+
+                {/* BULUNAN ÜRÜN KARTI */}
+                {foundProduct && (
+                    <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-6 border rounded-xl overflow-hidden bg-gradient-to-br from-purple-500/5 to-blue-500/5"
+                    >
+                        <div className="p-6 flex flex-col md:flex-row justify-between items-center gap-4">
+                            <div>
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    {foundProduct.name}
+                                    <span className="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full">
+                                        {foundProduct.category}
+                                    </span>
+                                </h3>
+                                <p className="text-muted-foreground mt-1">Ürün Kodu: AUTO-{foundProduct.id}</p>
+                            </div>
+                            <div className="text-right">
+                                <div className="text-2xl font-bold text-purple-600">₺{foundProduct.price.toLocaleString()}</div>
+                                <p className="text-xs text-muted-foreground">+ KDV</p>
+                            </div>
+                        </div>
+                        <div className="bg-secondary/30 p-4 flex justify-end gap-3 border-t">
+                            <Button variant="outline">Detayları Gör</Button>
+                            <Button onClick={() => handleBuy(foundProduct.name)} className="bg-green-600 hover:bg-green-700">
+                                <ShoppingCart className="w-4 h-4 mr-2"/> Satın Al / Talep Et
+                            </Button>
+                        </div>
+                    </motion.div>
+                )}
             </CardContent>
         </Card>
       </motion.div>
     );
   }
 
-  // --- 3. SEKME: ÖDEMELER ---
+  // --- 3. SEKME: ÖDEMELER (Aynı Kalıyor) ---
   if (activeTab === 'payments') {
     return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2"><CreditCard className="w-6 h-6 text-green-500"/> Ödemeler</h2>
-            <p className="text-muted-foreground">Geçmiş ve gelecek ödemeleriniz.</p>
-        </div>
-        <Card>
-            <CardHeader><CardTitle>Bekleyen Ödemeler</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-                <div className="flex items-center justify-between p-4 border rounded-lg bg-red-500/5 border-red-500/20">
-                    <div className="flex items-center gap-4">
-                        <Clock className="w-5 h-5 text-red-500"/>
-                        <div>
-                            <p className="font-bold">Web Otomasyon Kurulumu</p>
-                            <p className="text-xs text-muted-foreground">Vade: 05.02.2026</p>
-                        </div>
-                    </div>
-                    <div className="text-right">
-                        <p className="font-bold text-lg">₺15,000</p>
-                        <Button size="sm" className="mt-1">Ödeme Yap</Button>
-                    </div>
-                </div>
-            </CardContent>
-        </Card>
-      </motion.div>
+      <div className="p-8 space-y-6">
+        <h2 className="text-2xl font-bold">Ödemeler</h2>
+        <Card><CardContent className="pt-6"><p>Ödeme geçmişi burada görünecek.</p></CardContent></Card>
+      </div>
     );
   }
 
