@@ -1,21 +1,33 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // TypeScript hataları olsa bile build almayı zorla
+  // 1. TypeScript hatalarını görmezden gel (Build'i durdurmasın)
   typescript: {
     ignoreBuildErrors: true,
   },
-  // ESLint hatalarını görmezden gel
+  // 2. ESLint hatalarını görmezden gel
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Supabase Realtime hatasını bastırmak için (Az önceki sarı uyarı)
-  webpack: (config) => {
+  // 3. Supabase 'Critical dependency' uyarısını sustur
+  webpack: (config, { isServer }) => {
     config.resolve.alias = {
       ...config.resolve.alias,
-      ws: false, // Tarayıcıda websocket modülünü yoksay
+      // Tarayıcı tarafında 'ws' (WebSocket) modülünü aramasını engelle
+      ws: false,
     };
+    
+    // Supabase node-fetch uyarısını engellemek için
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
+      };
+    }
+    
     return config;
   },
 };
 
-module.exports = nextConfig;
+export default nextConfig;
