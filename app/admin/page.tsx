@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
-// İkonlar için lucide-react (yoksa npm install lucide-react yapabilirsin veya kaldırabilirsin)
+// İkonlar
 import { Copy, Trash2, Plus, LogOut } from 'lucide-react' 
 
 interface Product {
@@ -162,7 +162,8 @@ export default function AdminPage() {
           <table className="w-full text-left">
             <thead className="bg-gray-100 border-b">
               <tr>
-                <th className="p-4 font-semibold text-gray-600">Ürün Kodu</th> {/* EKLENDİ */}
+                {/* BURAYA ÜRÜN KODU BAŞLIĞINI EKLEDİK */}
+                <th className="p-4 font-semibold text-gray-600">Ürün Kodu</th>
                 <th className="p-4 font-semibold text-gray-600">Ürün Adı</th>
                 <th className="p-4 font-semibold text-gray-600">Kategori</th>
                 <th className="p-4 font-semibold text-gray-600">Fiyat</th>
@@ -177,7 +178,7 @@ export default function AdminPage() {
               ) : (
                 products.map((product) => (
                   <tr key={product.id} className="border-b hover:bg-gray-50 transition-colors">
-                    {/* ÜRÜN KODU SÜTUNU */}
+                    {/* BURAYA ÜRÜN KODU SÜTUNUNU EKLEDİK */}
                     <td className="p-4">
                       <div className="flex items-center gap-2">
                         <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded font-mono text-sm font-bold">
