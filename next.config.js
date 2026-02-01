@@ -1,13 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Hataları yoksay ve build al
+  // TypeScript hatalarını YOKSAY (Build'i durdurmasın)
   typescript: {
     ignoreBuildErrors: true,
   },
+  // ESLint hatalarını YOKSAY
   eslint: {
     ignoreDuringBuilds: true,
   },
-  // Supabase hatasını sustur
+  // Supabase/WebSocket hatalarını sustur
   webpack: (config) => {
     config.resolve.alias = {
       ...config.resolve.alias,
