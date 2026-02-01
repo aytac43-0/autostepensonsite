@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
+// İkonlar için lucide-react (yoksa npm install lucide-react yapabilirsin veya kaldırabilirsin)
+import { Copy, Trash2, Plus, LogOut } from 'lucide-react' 
 
-// Basit tip tanımı (UI için)
 interface Product {
   id: number
   name: string
@@ -15,7 +16,7 @@ interface Product {
 export default function AdminPage() {
   const supabase = createClientComponentClient()
   const router = useRouter()
-  
+   
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
   const [newProduct, setNewProduct] = useState({ name: '', category: '', price: '' })
@@ -29,10 +30,11 @@ export default function AdminPage() {
   // Ürünleri Listele
   const fetchProducts = async () => {
     setLoading(true)
+    // ID'ye göre sıralayalım ki kodlar (AUTO-1, AUTO-2) düzenli dursun
     const { data, error } = await supabase
       .from('products')
       .select('*')
-      .order('id', { ascending: false })
+      .order('id', { ascending: true }) 
 
     if (error) {
       console.error('Veri çekme hatası:', error)
@@ -42,7 +44,7 @@ export default function AdminPage() {
     setLoading(false)
   }
 
-  // Yeni Ürün Ekle (HATA DÜZELTİLEN KISIM BURADA)
+  // Yeni Ürün Ekle
   const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!newProduct.name || !newProduct.price) {
@@ -57,7 +59,7 @@ export default function AdminPage() {
           category: newProduct.category,
           price: Number(newProduct.price)
         }
-      ] as any) // <--- HATA ÇÖZÜMÜ: 'as any' eklendi.
+      ] as any)
 
       if (error) throw error
 
@@ -87,6 +89,13 @@ export default function AdminPage() {
     }
   }
 
+  // Kodu Kopyala Fonksiyonu
+  const copyCode = (id: number) => {
+    const code = `AUTO-${id}`
+    navigator.clipboard.writeText(code)
+    alert(`Kopyalandı: ${code}`)
+  }
+
   // Çıkış Yap
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -97,60 +106,63 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto">
-        
+      <div className="max-w-5xl mx-auto">
+         
         {/* Başlık ve Logout */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Yönetim Paneli</h1>
           <button 
             onClick={handleLogout}
-            className="text-sm text-red-600 hover:underline"
+            className="flex items-center gap-2 text-sm text-red-600 hover:text-red-700 font-medium"
           >
-            Çıkış Yap
+            <LogOut className="w-4 h-4" /> Çıkış Yap
           </button>
         </div>
 
         {/* Ürün Ekleme Formu */}
-        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4">Yeni Ürün Ekle</h2>
-          {errorMsg && <p className="text-red-500 mb-4 text-sm">{errorMsg}</p>}
-          
+        <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 mb-8">
+          <h2 className="text-xl font-semibold mb-4 text-gray-700 flex items-center gap-2">
+            <Plus className="w-5 h-5"/> Yeni Ürün Ekle
+          </h2>
+          {errorMsg && <p className="text-red-500 mb-4 text-sm bg-red-50 p-2 rounded">{errorMsg}</p>}
+           
           <form onSubmit={handleAddProduct} className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="text"
               placeholder="Ürün Adı"
-              className="border p-2 rounded"
+              className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
               value={newProduct.name}
               onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
             />
             <input
               type="text"
               placeholder="Kategori"
-              className="border p-2 rounded"
+              className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
               value={newProduct.category}
               onChange={(e) => setNewProduct({ ...newProduct, category: e.target.value })}
             />
             <input
               type="number"
               placeholder="Fiyat"
-              className="border p-2 rounded"
+              className="border border-gray-300 p-2 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none"
               value={newProduct.price}
               onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
             />
             <button 
               type="submit"
-              className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition"
+              className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 transition font-medium"
             >
-              Ekle
+              Kaydet
             </button>
           </form>
         </div>
 
         {/* Ürün Listesi Tablosu */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
           <table className="w-full text-left">
             <thead className="bg-gray-100 border-b">
               <tr>
+                <th className="p-4 font-semibold text-gray-600">Ürün Kodu</th> {/* EKLENDİ */}
                 <th className="p-4 font-semibold text-gray-600">Ürün Adı</th>
                 <th className="p-4 font-semibold text-gray-600">Kategori</th>
                 <th className="p-4 font-semibold text-gray-600">Fiyat</th>
@@ -160,20 +172,42 @@ export default function AdminPage() {
             <tbody>
               {products.length === 0 ? (
                 <tr>
-                  <td colSpan={4} className="p-6 text-center text-gray-500">Henüz ürün eklenmemiş.</td>
+                  <td colSpan={5} className="p-8 text-center text-gray-500">Henüz ürün eklenmemiş.</td>
                 </tr>
               ) : (
                 products.map((product) => (
-                  <tr key={product.id} className="border-b hover:bg-gray-50">
-                    <td className="p-4">{product.name}</td>
-                    <td className="p-4 text-gray-600">{product.category || '-'}</td>
-                    <td className="p-4 font-mono">{product.price} ₺</td>
+                  <tr key={product.id} className="border-b hover:bg-gray-50 transition-colors">
+                    {/* ÜRÜN KODU SÜTUNU */}
+                    <td className="p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="bg-purple-100 text-purple-700 px-2 py-1 rounded font-mono text-sm font-bold">
+                          AUTO-{product.id}
+                        </span>
+                        <button 
+                          onClick={() => copyCode(product.id)}
+                          className="text-gray-400 hover:text-gray-600"
+                          title="Kodu Kopyala"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="p-4 font-medium text-gray-800">{product.name}</td>
+                    <td className="p-4 text-gray-600">
+                      {product.category ? (
+                        <span className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-600 border">
+                            {product.category}
+                        </span>
+                      ) : '-'}
+                    </td>
+                    <td className="p-4 font-bold text-gray-700">{product.price.toLocaleString()} ₺</td>
                     <td className="p-4 text-right">
                       <button 
                         onClick={() => handleDelete(product.id)}
-                        className="text-red-500 hover:text-red-700 text-sm font-semibold"
+                        className="text-red-500 hover:text-red-700 p-2 hover:bg-red-50 rounded transition"
+                        title="Sil"
                       >
-                        Sil
+                        <Trash2 className="w-4 h-4" />
                       </button>
                     </td>
                   </tr>
