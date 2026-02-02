@@ -1,43 +1,58 @@
 import Link from 'next/link'
 import { ArrowRight, Box } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 text-center relative overflow-hidden">
       
-      {/* Basit bir Logo/İkon */}
-      <div className="bg-slate-800/50 p-4 rounded-2xl mb-8 border border-slate-700 backdrop-blur-sm">
-        <Box className="w-12 h-12 text-purple-500" />
+      {/* Logo Alanı: Arkasına hafif bir renk hüzmesi ekledik */}
+      <div className="relative group mb-8">
+        <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
+        <div className="relative bg-slate-900/90 p-5 rounded-2xl border border-slate-700/50 backdrop-blur-xl ring-1 ring-white/10">
+           <Box className="w-14 h-14 text-purple-500" />
+        </div>
       </div>
 
-      <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-slate-400 mb-6">
+      <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-blue-100 mb-6 drop-shadow-2xl tracking-tight">
         Autostep
       </h1>
       
-      <p className="text-lg md:text-xl text-slate-400 max-w-2xl mb-10 leading-relaxed">
-        İşletmeniz için yapay zeka destekli otomasyon çözümleri. 
-        Geleceği bugün inşa etmeye başlayın.
+      <p className="text-lg md:text-xl text-slate-400 max-w-2xl mb-12 leading-relaxed">
+        İşletmeniz için yapay zeka destekli otomasyon çözümleri. <br/>
+        <span className="text-purple-400/90 font-medium">Geleceği bugün inşa etmeye başlayın.</span>
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      {/* BUTONLAR */}
+      <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto z-20">
+        
+        {/* 1. Giriş Yap Butonu - NEON GRADIENT & HAREKETLİ */}
         <Link 
           href="/login" 
-          className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-medium transition-all flex items-center justify-center gap-2 shadow-lg shadow-purple-500/20"
+          className="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl font-bold text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/60 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 overflow-hidden"
         >
-          Giriş Yap <ArrowRight className="w-4 h-4" />
+           {/* Üzerinden geçen ışık efekti */}
+           <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 -skew-x-12 -translate-x-full"></div>
+           
+           <span>Giriş Yap</span>
+           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Link>
         
+        {/* 2. Hesap Oluştur Butonu - BUZLU CAM & PARLAYAN KENAR (Link Düzeltildi: /signup) */}
         <Link 
-          href="/register" 
-          className="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white border border-slate-700 rounded-xl font-medium transition-all"
+          href="/signup" 
+          className="group relative px-8 py-4 bg-slate-900/40 hover:bg-slate-800/60 text-white rounded-xl font-bold backdrop-blur-md border border-white/10 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center"
         >
-          Hesap Oluştur
+          <span className="bg-gradient-to-r from-white to-slate-300 group-hover:from-purple-200 group-hover:to-blue-200 bg-clip-text text-transparent transition-all">
+            Hesap Oluştur
+          </span>
         </Link>
       </div>
 
-      {/* Footer benzeri alt bilgi */}
-      <div className="absolute bottom-8 text-sm text-slate-600">
-        © 2024 Autostep AI Solutions
+      {/* Footer */}
+      <div className="absolute bottom-8 text-xs text-slate-600 font-medium tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity">
+        © 2026 Autostep AI Solutions
       </div>
     </div>
   )
