@@ -1,42 +1,35 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { LanguageProvider } from '@/contexts/LanguageContext';
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+import { Toaster } from 'sonner'
+import AutomationBackground from '@/components/AutomationBackground'
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Autostep - AI & Automation Solutions',
-  description: 'Transform your business with intelligent AI and n8n automation solutions',
-  openGraph: {
-    images: [
-      {
-        url: 'https://bolt.new/static/og_default.png',
-      },
-    ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    images: [
-      {
-        url: 'https://bolt.new/static/og_default.png',
-      },
-    ],
-  },
-};
+  title: 'Autostep',
+  description: 'Otomasyon Çözümleri',
+}
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={inter.className} suppressHydrationWarning>
-        <LanguageProvider>
-          {children}
-        </LanguageProvider>
+    <html lang="tr" className="dark">
+      {/* DİKKAT: bg-transparent çok önemli! */}
+      <body className={`${inter.className} min-h-screen bg-transparent text-white antialiased`}>
+        
+        {/* Arka Plan Bileşeni */}
+        <AutomationBackground />
+        
+        <main className="relative z-10 flex flex-col min-h-screen">
+           {children}
+        </main>
+        
+        <Toaster position="top-center" theme="dark" />
       </body>
     </html>
-  );
+  )
 }
