@@ -3,8 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
 
-// DÜZELTİLDİ: Başındaki @ işaretini kaldırdık, ./ yaptık.
-// Çünkü layout.tsx ve components klasörü aynı yerin (app) içinde.
+// DİKKAT: Burası './components' olmalı (layout ile components yan yana olduğu için)
 import AutomationBackground from './components/AutomationBackground'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -21,13 +20,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="tr" className="dark">
-      {/* bg-transparent önemli */}
-      <body className={`${inter.className} min-h-screen bg-transparent text-white`}>
-        
-        {/* Arka Plan Bileşeni */}
+      <body className={`${inter.className} min-h-screen bg-transparent text-white antialiased`}>
+        {/* Arka plan burada çalışacak */}
         <AutomationBackground />
         
-        <main className="relative z-10 min-h-screen flex flex-col">
+        <main className="relative z-10 flex flex-col min-h-screen">
            {children}
         </main>
         
