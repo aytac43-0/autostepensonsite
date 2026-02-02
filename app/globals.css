@@ -151,3 +151,16 @@
   0% { transform: rotateX(0deg) rotateY(0deg); }
   100% { transform: rotateX(360deg) rotateY(360deg); }
 }
+/* --- Logo İçin Yumuşak Dönme Animasyonu --- */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite; /* 20 saniyede bir tam tur (çok sakin) */
+}
