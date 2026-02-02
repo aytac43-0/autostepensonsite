@@ -33,6 +33,7 @@
   }
   body {
     @apply bg-background text-foreground;
+    /* Koyu tema degrade arka plan */
     background: linear-gradient(to bottom, #0a0a0f 0%, #111827 100%);
   }
 }
@@ -54,9 +55,10 @@
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
   }
 }
-/* --- OTOMASYON ARKA PLAN ANİMASYONU --- */
 
-/* Hareketli Izgara (Noktalar) */
+/* --- OTOMASYON ARKA PLAN ANİMASYONU --- */
+/* (Bileşen yüklenmezse yedek olarak çalışır) */
+
 .network-grid-bg {
   background-size: 50px 50px;
   background-image: 
@@ -64,7 +66,6 @@
   animation: moveBackground 40s linear infinite;
 }
 
-/* Hareketli Çizgiler (Bağlantılar) */
 .network-grid-lines {
   background-size: 60px 60px;
   background-image: 
@@ -73,7 +74,6 @@
   animation: moveLines 30s linear infinite reverse;
 }
 
-/* Animasyon Kuralları */
 @keyframes moveBackground {
   0% { background-position: 0 0; }
   100% { background-position: 50px 50px; }
@@ -84,7 +84,6 @@
   100% { transform: translateY(60px); }
 }
 
-/* Yavaşça Yanıp Sönme Efekti */
 .pulse-glow {
   animation: pulseGlow 8s ease-in-out infinite;
 }
@@ -93,74 +92,24 @@
   0%, 100% { opacity: 0.3; }
   50% { opacity: 0.6; }
 }
-/* --- 3D KÜP ANİMASYONU --- */
 
-/* Küpün Duruşu ve Dönüşü */
-.cube-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 300px;
-  height: 300px;
-  transform: translate(-50%, -50%);
-  perspective: 1000px;
-  opacity: 0.15; /* Çok baskın olmasın diye şeffaflık */
-  pointer-events: none;
-}
+/* --- 3D LOGO DÖNME ANİMASYONU (YENİ) --- */
+/* Logonun kendi ekseni etrafında (Y ekseni) takla atmasını sağlar */
 
-.cube {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  transform-style: preserve-3d;
-  animation: rotateCube 25s infinite linear;
-}
-
-/* Küpün Yüzeyleri */
-.cube-face {
-  position: absolute;
-  width: 300px;
-  height: 300px;
-  border: 2px solid rgba(139, 92, 246, 0.5); /* Mor Çizgiler */
-  background: rgba(139, 92, 246, 0.02); /* Çok hafif dolgu */
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.1); /* Hafif parlama */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Yüzeylerin Konumları */
-.front  { transform: rotateY(  0deg) translateZ(150px); }
-.back   { transform: rotateY(180deg) translateZ(150px); }
-.right  { transform: rotateY( 90deg) translateZ(150px); }
-.left   { transform: rotateY(-90deg) translateZ(150px); }
-.top    { transform: rotateX( 90deg) translateZ(150px); }
-.bottom { transform: rotateX(-90deg) translateZ(150px); }
-
-/* İçindeki Küçük Noktalar (Devre Süsü) */
-.cube-face::after {
-  content: '';
-  width: 10px;
-  height: 10px;
-  background-color: rgba(139, 92, 246, 0.8);
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(139, 92, 246, 1);
-}
-
-@keyframes rotateCube {
-  0% { transform: rotateX(0deg) rotateY(0deg); }
-  100% { transform: rotateX(360deg) rotateY(360deg); }
-}
-/* --- Logo İçin Yumuşak Dönme Animasyonu --- */
-@keyframes spin-slow {
+@keyframes spin-3d-y {
   from {
-    transform: rotate(0deg);
+    transform: rotateY(0deg);
   }
   to {
-    transform: rotate(360deg);
+    transform: rotateY(360deg);
   }
 }
 
-.animate-spin-slow {
-  animation: spin-slow 20s linear infinite; /* 20 saniyede bir tam tur (çok sakin) */
+.animate-spin-3d {
+  /* 8 saniyede bir tam tur atar */
+  animation: spin-3d-y 8s linear infinite;
+  /* Dönüş sırasında arka yüzünün de görünmesini sağlar */
+  backface-visibility: visible;
+  /* 3D derinlik koruması */
+  transform-style: preserve-3d;
 }
