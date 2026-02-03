@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
-import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react'
+import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 
 export default function SignupPage() {
@@ -12,16 +12,16 @@ export default function SignupPage() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Supabase kayıt işlemi sonraki adımda
+    // Supabase bağlantısı birazdan
     setTimeout(() => setIsLoading(false), 2000)
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[85vh] w-full px-4 py-10">
+    // DÜZELTME BURADA: min-h-screen ile tam ortaya hizalıyoruz
+    <div className="flex flex-col items-center justify-center min-h-screen w-full px-4 py-10">
       
       <div className="w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
         
-        {/* Dekoratif Efekt */}
         <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/20 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none"></div>
 
         <div className="text-center mb-8 relative z-10">
@@ -40,7 +40,6 @@ export default function SignupPage() {
 
         <form onSubmit={handleSignup} className="space-y-4">
           
-          {/* Ad Soyad */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-300 ml-1">Ad Soyad</label>
             <div className="relative group/input">
@@ -54,7 +53,6 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Email */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-300 ml-1">E-posta</label>
             <div className="relative group/input">
@@ -68,7 +66,6 @@ export default function SignupPage() {
             </div>
           </div>
 
-          {/* Password */}
           <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-300 ml-1">Şifre</label>
             <div className="relative group/input">
