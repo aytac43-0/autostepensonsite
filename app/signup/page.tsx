@@ -1,221 +1,113 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Zap } from "lucide-react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { supabase } from "@/lib/supabase";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useState } from 'react'
+import Link from 'next/link'
+import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 
 export default function SignupPage() {
-  const { t } = useLanguage();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [agreedToTerms, setAgreedToTerms] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    if (!agreedToTerms) {
-      setError(t("auth.signup.termsError") || "Lütfen şartları kabul edin.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // 1. Kritik Değişiklik: full_name'i metadata olarak gönderiyoruz
-      // Böylece SQL Trigger'ımız bunu yakalayıp profili oluşturacak.
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: fullName, // İsim bilgisi burada gidiyor
-          },
-        },
-      });
-
-      if (signUpError) throw signUpError;
-
-      // 2. Değişiklik: Manuel profil oluşturma kodunu kaldırdık.
-      // Çünkü SQL trigger bunu otomatik yapıyor. Burası çakışma yaratıyordu.
-
-      if (data.user) {
-        setShowConfirmModal(true);
-      }
-    } catch (err: any) {
-      setError(err.message || "An error occurred during signup");
-    } finally {
-      setLoading(false);
-    }
-  };
+    e.preventDefault()
+    setIsLoading(true)
+    // Supabase kayıt işlemi sonraki adımda
+    setTimeout(() => setIsLoading(false), 2000)
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 relative overflow-hidden">
-      {/* Arkaplan Efektleri */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-1/2 -left-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-1/2 -right-1/4 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
-      </div>
+    <div className="flex flex-col items-center justify-center min-h-[85vh] w-full px-4 py-10">
+      
+      <div className="w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
+        
+        {/* Dekoratif Efekt */}
+        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-600/20 blur-3xl rounded-full -mr-10 -mt-10 pointer-events-none"></div>
 
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="w-full max-w-md relative z-10"
-      >
-        <div className="bg-card/50 backdrop-blur-sm border border-border rounded-2xl p-8 shadow-2xl">
-          <Link href="/" className="flex items-center justify-center gap-2 mb-8">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-              <Zap className="w-7 h-7 text-white" />
+        <div className="text-center mb-8 relative z-10">
+          <Link href="/" className="inline-block mb-4 hover:scale-105 transition-transform">
+            <div className="relative w-14 h-14 mx-auto bg-slate-800/50 rounded-xl flex items-center justify-center border border-white/10">
+                <Image src="/cube.png" alt="Logo" width={32} height={32} className="object-contain" />
             </div>
-            <span className="text-2xl font-bold">Autostep</span>
           </Link>
-
-          <h1 className="text-3xl font-bold text-center mb-2">{t("auth.signup.title")}</h1>
-          <p className="text-gray-400 text-center mb-8">
-            {t("auth.signup.subtitle")}
-          </p>
-
-          <form onSubmit={handleSignup} className="space-y-6">
-            {/* İsim Kutusu */}
-            <div className="space-y-2">
-              <Label htmlFor="fullName">{t("auth.signup.fullName")}</Label>
-              <Input
-                id="fullName"
-                type="text"
-                placeholder={t("auth.signup.fullNamePlaceholder") || "John Doe"}
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                required
-                className="bg-background/50"
-              />
-            </div>
-
-            {/* Email Kutusu */}
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("auth.signup.email")}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder={t("auth.signup.emailPlaceholder") || "name@example.com"}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-background/50"
-              />
-            </div>
-
-            {/* Şifre Kutusu */}
-            <div className="space-y-2">
-              <Label htmlFor="password">{t("auth.signup.password")}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder={t("auth.signup.passwordPlaceholder") || "******"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={6}
-                className="bg-background/50"
-              />
-              <p className="text-xs text-gray-500">
-                {t("auth.signup.passwordHint")}
-              </p>
-            </div>
-
-            {/* Şartlar Checkbox */}
-            <div className="flex items-start space-x-2">
-              <Checkbox
-                id="terms"
-                checked={agreedToTerms}
-                onCheckedChange={(checked) => setAgreedToTerms(checked as boolean)}
-                required
-              />
-              <label
-                htmlFor="terms"
-                className="text-sm text-gray-400 leading-relaxed cursor-pointer"
-              >
-                {t("auth.signup.agreeToTerms")}{" "}
-                <Link
-                  href="/terms"
-                  className="text-purple-400 hover:text-purple-300 underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {t("auth.signup.termsLink")}
-                </Link>{" "}
-                {t("auth.signup.and")}{" "}
-                <Link
-                  href="/privacy"
-                  className="text-purple-400 hover:text-purple-300 underline"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {t("auth.signup.privacyLink")}
-                </Link>
-              </label>
-            </div>
-
-            {/* Hata Mesajı */}
-            {error && (
-              <div className="text-red-400 text-sm bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                {error}
-              </div>
-            )}
-
-            {/* Buton */}
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-              size="lg"
-            >
-              {loading ? t("auth.signup.creatingAccount") : t("auth.signup.createAccount")}
-            </Button>
-          </form>
-
-          <p className="text-center text-gray-400 mt-6">
-            {t("auth.signup.alreadyHaveAccount")}{" "}
-            <Link href="/login" className="text-purple-400 hover:text-purple-300">
-              {t("auth.signup.signIn")}
-            </Link>
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-200 via-white to-purple-200">
+            Aramıza Katıl
+          </h2>
+          <p className="text-slate-400 text-sm mt-2">
+            30 saniyede ücretsiz hesabını oluştur.
           </p>
         </div>
-      </motion.div>
 
-      {/* Onay Modalı */}
-      <Dialog open={showConfirmModal} onOpenChange={setShowConfirmModal}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center">
-              {t("auth.signup.modal.title")}
-            </DialogTitle>
-            <DialogDescription className="text-center text-base pt-4">
-              {t("auth.signup.modal.description")}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex justify-center pt-4">
-            <Button
-              onClick={() => setShowConfirmModal(false)}
-              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-            >
-              {t("auth.signup.modal.close")}
-            </Button>
+        <form onSubmit={handleSignup} className="space-y-4">
+          
+          {/* Ad Soyad */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-300 ml-1">Ad Soyad</label>
+            <div className="relative group/input">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within/input:text-blue-400 transition-colors" />
+              <input 
+                type="text" 
+                placeholder="Adınız Soyadınız"
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                required
+              />
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
+
+          {/* Email */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-300 ml-1">E-posta</label>
+            <div className="relative group/input">
+              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within/input:text-blue-400 transition-colors" />
+              <input 
+                type="email" 
+                placeholder="ornek@email.com"
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                required
+              />
+            </div>
+          </div>
+
+          {/* Password */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-300 ml-1">Şifre</label>
+            <div className="relative group/input">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within/input:text-blue-400 transition-colors" />
+              <input 
+                type={showPassword ? "text" : "password"} 
+                placeholder="En az 6 karakter"
+                className="w-full bg-slate-950/50 border border-slate-700/50 rounded-xl py-3.5 pl-12 pr-12 text-white placeholder:text-slate-600 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                required
+                minLength={6}
+              />
+              <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <button 
+              type="submit" 
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              {isLoading ? <Loader2 className="animate-spin" /> : "Hesap Oluştur"}
+            </button>
+          </div>
+        </form>
+
+        <div className="mt-6 text-center text-sm text-slate-500">
+          Zaten hesabın var mı?{' '}
+          <Link href="/login" className="text-blue-400 hover:text-blue-300 font-medium hover:underline transition-all">
+            Giriş Yap
+          </Link>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
