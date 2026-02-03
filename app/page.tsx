@@ -10,19 +10,25 @@ export default function Home() {
       
       {/* Logo Alanı */}
       <div className="relative group mb-8">
-        {/* Dışarıdaki renkli parlama efekti (Bu kalıyor, üzerine gelince parlar) */}
+        {/* Arkadaki parlama efekti */}
         <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl blur opacity-25 group-hover:opacity-75 transition duration-1000 group-hover:duration-200"></div>
         
-        {/* İçerideki kutu */}
+        {/* İçerideki Kutu - DÜZELTME:
+            1. 'p-5' geri geldi (Küpün etrafında boşluk olsun diye).
+            2. Arka plan rengini geri getirdik.
+        */}
         <div className="relative bg-slate-900/90 p-5 rounded-2xl border border-slate-700/50 backdrop-blur-xl ring-1 ring-white/10 flex items-center justify-center">
            
-           {/* DEĞİŞİKLİK: Animasyon sınıfları kaldırıldı, sadece resim var */}
+           {/* RESİM AYARI: 
+               - src="/cube.png" yaptık (Az önce yüklediğin dosya).
+               - Boyutları tekrar kare yaptık (56x56).
+           */}
            <Image
-             src="/favicon.png" 
-             alt="Autostep Logo"
+             src="/cube.png" 
+             alt="Autostep Cube"
              width={56} 
              height={56} 
-             className="object-contain" // Sadece sığdırma ayarı, hareket yok
+             className="object-contain"
              priority
            />
            
@@ -41,18 +47,15 @@ export default function Home() {
       {/* BUTONLAR */}
       <div className="flex flex-col sm:flex-row gap-5 w-full sm:w-auto z-20">
         
-        {/* 1. Giriş Yap Butonu */}
         <Link 
           href="/login" 
           className="group relative px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl font-bold text-white shadow-lg shadow-purple-500/30 hover:shadow-purple-500/60 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-3 overflow-hidden"
         >
            <div className="absolute inset-0 bg-white/20 group-hover:translate-x-full transition-transform duration-700 -skew-x-12 -translate-x-full"></div>
-           
            <span>Giriş Yap</span>
            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </Link>
         
-        {/* 2. Hesap Oluştur Butonu */}
         <Link 
           href="/signup" 
           className="group relative px-8 py-4 bg-slate-900/40 hover:bg-slate-800/60 text-white rounded-xl font-bold backdrop-blur-md border border-white/10 hover:border-purple-500/50 hover:shadow-lg hover:shadow-purple-500/20 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center"
@@ -63,7 +66,6 @@ export default function Home() {
         </Link>
       </div>
 
-      {/* Footer */}
       <div className="absolute bottom-8 text-xs text-slate-600 font-medium tracking-widest uppercase opacity-60 hover:opacity-100 transition-opacity">
         © 2026 Autostep AI Solutions
       </div>
