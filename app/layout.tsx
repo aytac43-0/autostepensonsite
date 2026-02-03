@@ -3,8 +3,6 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'sonner'
 import AutomationBackground from './components/AutomationBackground'
-
-// 1. DÜZELTME: Klasör adı 'contexts' (çoğul) olduğu için yolu düzelttik.
 import { LanguageProvider } from '@/contexts/LanguageContext' 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -14,7 +12,13 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Autostep',
-  description: 'Otomasyon Çözümleri',
+  description: 'İşletmeniz için yapay zeka destekli otomasyon çözümleri.',
+  // YENİ: Tarayıcı sekmesindeki ikon ayarları
+  icons: {
+    icon: '/favicon.png',
+    shortcut: '/favicon.png',
+    apple: '/favicon.png',
+  },
 }
 
 export default function RootLayout({
@@ -26,10 +30,10 @@ export default function RootLayout({
     <html lang="tr" className="dark">
       <body className={`${inter.className} min-h-screen bg-transparent text-white antialiased`}>
         
-        {/* 2. ADIM: Tüm siteyi LanguageProvider ile sarmalıyoruz */}
+        {/* Tüm siteyi Dil Sağlayıcısı ile sarmalıyoruz */}
         <LanguageProvider>
           
-          {/* Arka Plan */}
+          {/* Hareketli Arka Plan */}
           <AutomationBackground />
           
           <main className="relative z-10 flex flex-col min-h-screen">
