@@ -12,20 +12,18 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-    // Supabase bağlantısını bir sonraki adımda yapacağız
+    // Supabase bağlantısı birazdan eklenecek
     setTimeout(() => setIsLoading(false), 2000)
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] w-full px-4">
+    // DÜZELTME BURADA: min-h-screen ile tam ortaya hizalıyoruz
+    <div className="flex flex-col items-center justify-center min-h-screen w-full px-4">
       
-      {/* Kart Yapısı */}
       <div className="w-full max-w-md bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-8 shadow-2xl relative overflow-hidden group">
         
-        {/* Kart Üstü Parlama Efekti */}
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50 group-hover:opacity-100 transition-opacity"></div>
 
-        {/* Başlık ve Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-block mb-4 hover:scale-105 transition-transform">
             <div className="relative w-16 h-16 mx-auto bg-slate-800/50 rounded-xl flex items-center justify-center border border-white/10">
@@ -40,10 +38,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleLogin} className="space-y-5">
-          
-          {/* Email Input */}
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300 ml-1">E-posta Adresi</label>
             <div className="relative group/input">
@@ -57,7 +52,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Password Input */}
           <div className="space-y-2">
             <div className="flex justify-between items-center ml-1">
               <label className="text-sm font-medium text-slate-300">Şifre</label>
@@ -83,7 +77,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Login Button */}
           <button 
             type="submit" 
             disabled={isLoading}
@@ -99,7 +92,6 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="relative my-8">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-slate-700/50"></div>
@@ -109,7 +101,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Social Login (Google) */}
         <button className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium py-3 rounded-xl transition-all flex items-center justify-center gap-3 group">
            <svg className="w-5 h-5" viewBox="0 0 24 24">
              <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -120,7 +111,6 @@ export default function LoginPage() {
            <span className="group-hover:text-white/90">Google ile Giriş Yap</span>
         </button>
 
-        {/* Footer Link */}
         <div className="mt-8 text-center text-sm text-slate-500">
           Hesabın yok mu?{' '}
           <Link href="/signup" className="text-purple-400 hover:text-purple-300 font-medium hover:underline transition-all">
