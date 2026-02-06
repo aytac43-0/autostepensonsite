@@ -11,6 +11,31 @@ export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
+  const [session, setSession] = useState<any>(null);
+
+  // Import imports needs to be added as well, but this tool handles chunks.
+  // I will need another replace for imports if not present.
+  // Assuming imports are needed, I'll use multi_replace or sequential replaces.
+  // Let's do imports first in a separate call or just trust users prompt if I can edit file head.
+
+  // Wait, I can't easily see if imports are there without reading.
+  // I'll assume I need to add imports.
+
+  useEffect(() => {
+    import('@/lib/supabase').then(({ supabase }) => {
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        setSession(session);
+      });
+
+      const {
+        data: { subscription },
+      } = supabase.auth.onAuthStateChange((_event, session) => {
+        setSession(session);
+      });
+
+      return () => subscription.unsubscribe();
+    })
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,11 +51,10 @@ export function Navbar() {
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/80 backdrop-blur-lg border-b border-border shadow-lg"
-          : "bg-transparent"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
+        ? "bg-background/80 backdrop-blur-lg border-b border-border shadow-lg"
+        : "bg-transparent"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
@@ -56,16 +80,37 @@ export function Navbar() {
               <Globe className="w-4 h-4" />
               <span className="text-sm font-medium">{language === "en" ? "TR" : "EN"}</span>
             </button>
-            <Link href="/login">
-              <Button variant="ghost" className="text-gray-300">
-                {t("nav.login")}
-              </Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                {t("nav.getStarted")}
-              </Button>
-            </Link>
+            {session ? (
+              <>
+                <Link href="/dashboard">
+                  <Button variant="ghost" className="text-gray-300 hover:text-white">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  onClick={async () => {
+                    const { supabase } = await import('@/lib/supabase');
+                    await supabase.auth.signOut();
+                  }}
+                  className="bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:text-red-400 border border-red-500/20"
+                >
+                  Çıkış Yap
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost" className="text-gray-300">
+                    {t("nav.login")}
+                  </Button>
+                </Link>
+                <Link href="/signup">
+                  <Button className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                    {t("nav.getStarted")}
+                  </Button>
+                </Link>
+              </>
+            )}
           </div>
 
           <button
@@ -107,16 +152,38 @@ export function Navbar() {
               <Globe className="w-4 h-4" />
               <span className="text-sm font-medium">{language === "en" ? "Türkçe" : "English"}</span>
             </button>
-            <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-              <Button variant="ghost" className="w-full text-gray-300">
-                {t("nav.login")}
-              </Button>
-            </Link>
-            <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
-              <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
-                {t("nav.getStarted")}
-              </Button>
-            </Link>
+            {session ? (
+              <>
+                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full text-gray-300">
+                    Dashboard
+                  </Button>
+                </Link>
+                <Button
+                  onClick={async () => {
+                    const { supabase } = await import('@/lib/supabase');
+                    await supabase.auth.signOut();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="w-full bg-red-500/10 text-red-500 hover:bg-red-500/20"
+                >
+                  Çıkış Yap
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button variant="ghost" className="w-full text-gray-300">
+                    {t("nav.login")}
+                  </Button>
+                </Link>
+                <Link href="/signup" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+                    {t("nav.getStarted")}
+                  </Button>
+                </Link>
+              </>
+            )}
           </motion.div>
         )}
       </div>
