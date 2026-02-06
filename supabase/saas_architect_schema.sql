@@ -5,27 +5,45 @@
 
 -- 1. ENUMS & UTILS
 -- ---------------------------------------------
-create type access_status as enum ('active', 'suspended', 'expired');
-create type payment_status as enum ('paid', 'failed', 'refunded');
+do $$ begin
+    create type access_status as enum ('active', 'suspended', 'expired');
+exception
+    when duplicate_object then null;
+end $$;
 
--- 2. PRODUCTS TABLE UPDATE
+do $$ begin
+    create type payment_status as enum ('paid', 'failed', 'refunded');
+exception
+    when duplicate_object then null;
+end $$;
+
+-- 2. PRODUCTS TABLE (CREATE IF MISSING)
 -- ---------------------------------------------
--- Ensure products has necessary fields
-alter table products add column if not exists is_subscription boolean default false;
-alter table products add column if not exists internal_code text;
--- Add unique constraint to internal_code for lookups
+create table if not exists products (
+  id uuid default gen_random_uuid() primary key,
+  name text not null,
+  description text,
+  price numeric default 0,
+  internal_code text,
+  is_subscription boolean default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+);
+
+-- Add unique constraint to internal_code for lookups safely
 create unique index if not exists products_internal_code_idx on products(internal_code);
 
 -- 3. USER_PRODUCTS TABLE (THE BRAIN)
 -- ---------------------------------------------
 create table if not exists user_products (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users(id) not null,
-  product_id uuid references products(id) not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  product_id uuid references products(id) on delete cascade not null,
   status access_status default 'active',
   expires_at timestamp with time zone, -- Null = Lifetime access
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
-  updated_at timestamp with time zone default timezone('utc'::text, now()) not null
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  unique(user_id, product_id) -- Prevent duplicate active subscriptions
 );
 
 -- Index for fast access checks
@@ -35,8 +53,8 @@ create index if not exists user_products_lookup_idx on user_products(user_id, pr
 -- ---------------------------------------------
 create table if not exists payments (
   id uuid default gen_random_uuid() primary key,
-  user_id uuid references auth.users(id) not null,
-  product_id uuid references products(id) not null,
+  user_id uuid references auth.users(id) on delete cascade not null,
+  product_id uuid references products(id) on delete set null not null,
   amount numeric not null,
   currency text default 'USD',
   payment_provider text default 'stripe_mock',
@@ -61,6 +79,12 @@ alter table user_products enable row level security;
 alter table payments enable row level security;
 alter table products enable row level security;
 
+-- Drop existing policies to prevent conflicts during re-runs
+drop policy if exists "Admins can view all user_products" on user_products;
+drop policy if exists "Admins can insert/update user_products" on user_products;
+drop policy if exists "Users can view their own products" on user_products;
+drop policy if exists "Users can purchase products (demo)" on user_products;
+
 -- USER_PRODUCTS POLICIES
 create policy "Admins can view all user_products"
   on user_products for select
@@ -74,11 +98,14 @@ create policy "Users can view their own products"
   on user_products for select
   using ( auth.uid() = user_id );
 
--- ALLOW USERS TO INSERT THEIR OWN PRODUCTS (For Demo/Mock Purchase)
--- In real strict SaaS, this would be disabled and handled by a Service Role hook.
 create policy "Users can purchase products (demo)"
   on user_products for insert
   with check ( auth.uid() = user_id );
+
+-- Drop existing policies for payments
+drop policy if exists "Admins can view all payments" on payments;
+drop policy if exists "Users can view their own payments" on payments;
+drop policy if exists "System can insert payments" on payments;
 
 -- PAYMENTS POLICIES
 create policy "Admins can view all payments"
@@ -92,6 +119,10 @@ create policy "Users can view their own payments"
 create policy "System can insert payments"
   on payments for insert
   with check ( auth.uid() = user_id );
+
+-- Drop existing policies for products
+drop policy if exists "Everyone can view products" on products;
+drop policy if exists "Admins can manage products" on products;
 
 -- PRODUCTS POLICIES
 create policy "Everyone can view products"
@@ -108,10 +139,12 @@ create policy "Users can view own profile"
   on profiles for select
   using ( auth.uid() = id );
 
+drop policy if exists "Admins can view all profiles" on profiles;
 create policy "Admins can view all profiles"
   on profiles for select
   using ( is_admin() );
 
+drop policy if exists "Admins can update all profiles" on profiles;
 create policy "Admins can update all profiles"
   on profiles for update
   using ( is_admin() );

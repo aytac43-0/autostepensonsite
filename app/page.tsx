@@ -9,11 +9,8 @@ import { Button } from '@/components/ui/button'
 export default function Home() {
   return (
     <div className="min-h-screen relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-600 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-600 rounded-full blur-[120px]" />
-      </div>
+      {/* Dark Overlay for Text Readability */}
+      <div className="absolute inset-0 bg-black/40 z-0 pointer-events-none" />
 
       <Navbar />
 
