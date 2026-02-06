@@ -6,7 +6,7 @@ import { Mail, Lock, User, Eye, EyeOff, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 
 import { useRouter } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useToast } from "@/hooks/use-toast"
 
 // ... imports
@@ -16,6 +16,7 @@ export default function SignupPage() {
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
   const { toast } = useToast()
+  const supabase = createClientComponentClient()
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault()

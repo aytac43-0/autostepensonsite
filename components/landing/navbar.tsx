@@ -6,12 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Zap, Menu, X, Globe } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { language, setLanguage, t } = useLanguage();
   const [session, setSession] = useState<any>(null);
+  const supabase = createClientComponentClient();
 
   // Import imports needs to be added as well, but this tool handles chunks.
   // I will need another replace for imports if not present.
@@ -22,20 +24,18 @@ export function Navbar() {
   // I'll assume I need to add imports.
 
   useEffect(() => {
-    import('@/lib/supabase').then(({ supabase }) => {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        setSession(session);
-      });
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
 
-      const {
-        data: { subscription },
-      } = supabase.auth.onAuthStateChange((_event, session) => {
-        setSession(session);
-      });
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
 
-      return () => subscription.unsubscribe();
-    })
-  }, []);
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   useEffect(() => {
     const handleScroll = () => {
