@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/lib/supabase";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { User, Mail, Calendar } from "lucide-react";
@@ -15,7 +15,10 @@ interface Client {
   request_count?: number;
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function ClientsPage() {
+  const supabase = createClientComponentClient();
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,7 +52,7 @@ export default function ClientsPage() {
     };
 
     fetchClients();
-  }, []);
+  }, [supabase]);
 
   if (loading) {
     return (

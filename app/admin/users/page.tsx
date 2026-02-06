@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+export const dynamic = 'force-dynamic'
+
+import { useEffect, useState, useCallback } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -15,18 +17,18 @@ export default function AdminUsersPage() {
     const accessService = new AccessService(supabase)
     const { toast } = useToast()
 
-    useEffect(() => {
-        fetchUsers()
-    }, [])
-
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
         const { data } = await supabase
             .from('profiles')
             .select('*')
             .order('created_at', { ascending: false })
 
         if (data) setUsers(data)
-    }
+    }, [supabase])
+
+    useEffect(() => {
+        fetchUsers()
+    }, [fetchUsers])
 
     // NOTE: In a real app, products would be fetched dynamically. 
     // For this architect demo, we assume a "Standard Plan" product ID exists.

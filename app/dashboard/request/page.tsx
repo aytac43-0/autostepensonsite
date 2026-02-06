@@ -7,11 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { useRouter } from "next/navigation";
 import { CheckCircle, Sparkles } from "lucide-react";
 
 export default function NewRequestPage() {
+  const supabase = createClientComponentClient();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,7 @@ export default function NewRequestPage() {
           </div>
           <h2 className="text-3xl font-bold mb-2">Request Submitted!</h2>
           <p className="text-gray-400">
-            We'll review your automation request and get back to you soon.
+            We&apos;ll review your automation request and get back to you soon.
           </p>
         </motion.div>
       </div>
@@ -170,11 +171,11 @@ export default function NewRequestPage() {
               </li>
               <li className="flex items-start">
                 <span className="text-purple-400 mr-2">2.</span>
-                We'll reach out to discuss requirements and provide a timeline
+                We&apos;ll reach out to discuss requirements and provide a timeline
               </li>
               <li className="flex items-start">
                 <span className="text-purple-400 mr-2">3.</span>
-                We'll build, test, and deploy your custom automation
+                We&apos;ll build, test, and deploy your custom automation
               </li>
             </ul>
           </CardContent>

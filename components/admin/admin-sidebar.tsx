@@ -5,7 +5,6 @@ import { LayoutDashboard, Users, FileText, LogOut, Zap, Shield } from "lucide-re
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
 
 const navItems = [
   {
@@ -25,9 +24,12 @@ const navItems = [
   },
 ];
 
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
+
 export function AdminSidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const supabase = createClientComponentClient();
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -64,11 +66,10 @@ export function AdminSidebar() {
               <motion.div
                 whileHover={{ scale: 1.02, x: 5 }}
                 whileTap={{ scale: 0.98 }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? "bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 text-purple-300"
-                    : "text-gray-400 hover:text-gray-200 hover:bg-secondary"
-                }`}
+                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${isActive
+                  ? "bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 text-purple-300"
+                  : "text-gray-400 hover:text-gray-200 hover:bg-secondary"
+                  }`}
               >
                 <Icon className="w-5 h-5" />
                 <span className="font-medium">{item.name}</span>

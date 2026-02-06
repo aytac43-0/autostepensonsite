@@ -146,7 +146,7 @@ export default function PrivacyPage() {
             <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 border border-border">
               <h2 className="text-2xl font-bold mb-4">Changes to This Policy</h2>
               <p className="text-gray-300 leading-relaxed">
-                We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last updated" date. You are advised to review this Privacy Policy periodically for any changes.
+                We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the &quot;Last updated&quot; date. You are advised to review this Privacy Policy periodically for any changes.
               </p>
             </div>
 

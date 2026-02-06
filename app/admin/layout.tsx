@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { Loader2 } from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function AdminLayout({
   children,
 }: {

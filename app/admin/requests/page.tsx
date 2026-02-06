@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
-import { supabase } from "@/lib/supabase";
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,11 +49,14 @@ const statusConfig = {
   },
 };
 
+export const dynamic = 'force-dynamic'
+
 export default function RequestsPage() {
+  const supabase = createClientComponentClient();
   const [requests, setRequests] = useState<RequestWithClient[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     const { data: requestsData } = await supabase
       .from("automation_requests")
       .select("*")
@@ -80,11 +83,11 @@ export default function RequestsPage() {
     }
 
     setLoading(false);
-  };
+  }, [supabase]);
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [fetchRequests]);
 
   const handleStatusChange = async (
     requestId: string,

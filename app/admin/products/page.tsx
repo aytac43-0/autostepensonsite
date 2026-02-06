@@ -1,6 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+export const dynamic = 'force-dynamic'
+
+import { useEffect, useState, useCallback } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,14 +18,14 @@ export default function AdminProductsPage() {
     const { toast } = useToast()
     const [isOpen, setIsOpen] = useState(false)
 
-    useEffect(() => {
-        fetchProducts()
-    }, [])
-
-    const fetchProducts = async () => {
+    const fetchProducts = useCallback(async () => {
         const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false })
         if (data) setProducts(data)
-    }
+    }, [supabase])
+
+    useEffect(() => {
+        fetchProducts()
+    }, [fetchProducts])
 
     const handleCreate = async () => {
         const { error } = await supabase.from('products').insert(newProduct)

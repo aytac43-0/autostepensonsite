@@ -4,7 +4,7 @@ import './globals.css'
 import { Toaster } from "@/components/ui/toaster"
 import { LanguageProvider } from '@/contexts/LanguageContext'
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ['latin', 'latin-ext'] })
 
 export const metadata: Metadata = {
   title: 'Autostep | AI Automation Agency',

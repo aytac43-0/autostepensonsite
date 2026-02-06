@@ -1,18 +1,18 @@
-"use client";
+'use client'
 
-import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
-import { supabase } from "@/lib/supabase";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Clock, CheckCircle, XCircle, Loader } from "lucide-react";
+import { useEffect, useState, useCallback } from "react"
+import { motion } from "framer-motion"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Clock, CheckCircle, XCircle, Loader } from "lucide-react"
 
 interface AutomationRequest {
-  id: string;
-  title: string;
-  description: string | null;
-  status: "pending" | "in_progress" | "completed" | "cancelled";
-  created_at: string;
+  id: string
+  title: string
+  description: string | null
+  status: "pending" | "in_progress" | "completed" | "cancelled"
+  created_at: string
 }
 
 const statusConfig = {
@@ -36,40 +36,53 @@ const statusConfig = {
     color: "bg-red-500/10 text-red-400 border-red-500/50",
     label: "Cancelled",
   },
-};
+}
 
 export default function AutomationsPage() {
-  const [requests, setRequests] = useState<AutomationRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [requests, setRequests] = useState<AutomationRequest[]>([])
+  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const fetchRequests = async () => {
+  const supabase = createClientComponentClient()
+
+  const fetchRequests = useCallback(async () => {
+    try {
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await supabase.auth.getUser()
 
       if (user) {
         const { data } = await supabase
           .from("automation_requests")
           .select("*")
           .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
+          .order("created_at", { ascending: false })
 
-        setRequests(data || []);
+        if (data) {
+          // Cast the string status to the union type safely
+          const typedData = data.map(item => ({
+            ...item,
+            status: item.status as AutomationRequest['status']
+          }))
+          setRequests(typedData)
+        }
       }
+    } catch (error) {
+      console.error("Error fetching automations:", error)
+    } finally {
+      setLoading(false)
+    }
+  }, [supabase])
 
-      setLoading(false);
-    };
-
-    fetchRequests();
-  }, []);
+  useEffect(() => {
+    fetchRequests()
+  }, [fetchRequests])
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
       </div>
-    );
+    )
   }
 
   return (
@@ -79,10 +92,10 @@ export default function AutomationsPage() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-4xl font-bold mb-2">
-          My <span className="gradient-text">Automations</span>
+        <h1 className="text-4xl font-bold mb-2 text-white">
+          My <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Automations</span>
         </h1>
-        <p className="text-gray-400">
+        <p className="text-slate-400">
           Track the status of your automation requests
         </p>
       </motion.div>
@@ -93,14 +106,14 @@ export default function AutomationsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          <Card className="bg-card/50 backdrop-blur-sm border-border">
+          <Card className="bg-zinc-900/50 backdrop-blur-sm border-white/5">
             <CardContent className="pt-6 text-center">
-              <p className="text-gray-400 mb-4">
-                You haven't submitted any automation requests yet.
+              <p className="text-slate-400 mb-4">
+                You haven&apos;t submitted any automation requests yet.
               </p>
               <a
-                href="/dashboard/request"
-                className="text-purple-400 hover:text-purple-300"
+                href="/dashboard/requests"
+                className="text-purple-400 hover:text-purple-300 hover:underline"
               >
                 Create your first request
               </a>
@@ -110,7 +123,8 @@ export default function AutomationsPage() {
       ) : (
         <div className="space-y-4">
           {requests.map((request, index) => {
-            const StatusIcon = statusConfig[request.status].icon;
+            const config = statusConfig[request.status] || statusConfig.pending
+            const StatusIcon = config.icon
 
             return (
               <motion.div
@@ -118,33 +132,33 @@ export default function AutomationsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ scale: 1.02, x: 5 }}
+                whileHover={{ scale: 1.01 }}
               >
-                <Card className="bg-card/50 backdrop-blur-sm border-border hover:border-purple-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20">
+                <Card className="bg-zinc-900/50 backdrop-blur-sm border-white/5 hover:border-purple-500/30 transition-all duration-300">
                   <CardHeader>
-                    <div className="flex items-start justify-between">
+                    <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <CardTitle className="text-xl mb-2">
+                        <CardTitle className="text-xl mb-2 text-white">
                           {request.title}
                         </CardTitle>
                         {request.description && (
-                          <p className="text-gray-400 text-sm">
+                          <p className="text-slate-400 text-sm line-clamp-2">
                             {request.description}
                           </p>
                         )}
                       </div>
                       <Badge
                         variant="outline"
-                        className={statusConfig[request.status].color}
+                        className={`${config.color} whitespace-nowrap`}
                       >
                         <StatusIcon className="w-3 h-3 mr-1" />
-                        {statusConfig[request.status].label}
+                        {config.label}
                       </Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="w-4 h-4 mr-2" />
+                    <div className="flex items-center text-xs text-slate-500">
+                      <Clock className="w-3 h-3 mr-2" />
                       Submitted on{" "}
                       {new Date(request.created_at).toLocaleDateString("en-US", {
                         year: "numeric",
@@ -155,10 +169,10 @@ export default function AutomationsPage() {
                   </CardContent>
                 </Card>
               </motion.div>
-            );
+            )
           })}
         </div>
       )}
     </div>
-  );
+  )
 }

@@ -17,7 +17,7 @@ export default function TermsPage() {
             <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 border border-border">
               <h2 className="text-2xl font-bold mb-4">Agreement to Terms</h2>
               <p className="text-gray-300 leading-relaxed">
-                By accessing or using Autostep's automation services and website, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing our services. The materials and services provided are protected by applicable copyright and trademark law.
+                By accessing or using Autostep&apos;s automation services and website, you agree to be bound by these Terms of Service and all applicable laws and regulations. If you do not agree with any of these terms, you are prohibited from using or accessing our services. The materials and services provided are protected by applicable copyright and trademark law.
               </p>
             </div>
 
@@ -98,7 +98,7 @@ export default function TermsPage() {
             <div className="bg-card/50 backdrop-blur-sm rounded-2xl p-8 border border-border">
               <h2 className="text-2xl font-bold mb-4">Disclaimer of Warranties</h2>
               <p className="text-gray-300 leading-relaxed">
-                The services are provided "as is" without warranties of any kind, either express or implied. Autostep does not warrant that the services will be uninterrupted, error-free, or completely secure. We do not guarantee specific business outcomes or results from using our automation services. You acknowledge that automation solutions require ongoing monitoring and adjustment.
+                The services are provided &quot;as is&quot; without warranties of any kind, either express or implied. Autostep does not warrant that the services will be uninterrupted, error-free, or completely secure. We do not guarantee specific business outcomes or results from using our automation services. You acknowledge that automation solutions require ongoing monitoring and adjustment.
               </p>
             </div>
 

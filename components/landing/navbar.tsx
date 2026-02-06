@@ -89,7 +89,6 @@ export function Navbar() {
                 </Link>
                 <Button
                   onClick={async () => {
-                    const { supabase } = await import('@/lib/supabase');
                     await supabase.auth.signOut();
                   }}
                   className="bg-red-500/10 text-red-500 hover:bg-red-500/20 hover:text-red-400 border border-red-500/20"

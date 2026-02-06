@@ -159,9 +159,7 @@ export default function CaseStudiesPage() {
 
           <div className="mt-16 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-2xl p-8 border border-purple-500/30 text-center">
             <h2 className="text-3xl font-bold mb-4">Ready to Write Your Success Story?</h2>
-            <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-              Join the businesses that have transformed their operations with Autostep. Let's discuss how we can help you achieve similar results.
-            </p>
+            Join the businesses that have transformed their operations with Autostep. Let&apos;s discuss how we can help you achieve similar results.
             <a
               href="/contact"
               className="inline-block bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300"
