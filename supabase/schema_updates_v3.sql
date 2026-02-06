@@ -14,10 +14,12 @@ create table if not exists projects (
 alter table projects enable row level security;
 
 -- Policies for Projects
+drop policy if exists "Users can view their own projects" on projects;
 create policy "Users can view their own projects"
   on projects for select
   using ( auth.uid() = user_id );
 
+drop policy if exists "Users can create their own projects" on projects;
 create policy "Users can create their own projects"
   on projects for insert
   with check ( auth.uid() = user_id );
@@ -38,14 +40,17 @@ create table if not exists automation_requests (
 alter table automation_requests enable row level security;
 
 -- Policies for Automation Requests
+drop policy if exists "Users can view their own requests" on automation_requests;
 create policy "Users can view their own requests"
   on automation_requests for select
   using ( auth.uid() = user_id );
 
+drop policy if exists "Users can create their own requests" on automation_requests;
 create policy "Users can create their own requests"
   on automation_requests for insert
   with check ( auth.uid() = user_id );
 
+drop policy if exists "Admins can view all requests" on automation_requests;
 create policy "Admins can view all requests"
   on automation_requests for select
   using ( 
