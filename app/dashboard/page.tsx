@@ -1,149 +1,103 @@
 'use client'
 
-export const dynamic = "force-dynamic";
-
-import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { 
-  Search, ShoppingCart, AlertCircle, Loader2, CheckCircle, Clock
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
-
-function DashboardContent() {
-  const searchParams = useSearchParams();
-  const activeTab = searchParams.get('tab') || 'overview';
-
-  const [searchCode, setSearchCode] = useState("");
-  const [foundProduct, setFoundProduct] = useState<any>(null);
-  const [searchLoading, setSearchLoading] = useState(false);
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const handleSearch = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setFoundProduct(null);
-    setErrorMsg("");
-    setSearchLoading(true);
-
-    const codeToSearch = searchCode.trim();
-
-    if (codeToSearch.length < 3) {
-        setErrorMsg("Lütfen geçerli bir ürün kodu girin.");
-        setSearchLoading(false);
-        return;
-    }
-
-    try {
-        // ARTIK 'product_code' SÜTUNUNDA ARIYORUZ
-        const { data, error } = await supabase
-            .from('products')
-            .select('*')
-            .eq('product_code', codeToSearch) // Tam eşleşme arar
-            .single();
-
-        if (error || !data) {
-            setErrorMsg("Bu kod ile eşleşen bir ürün bulunamadı.");
-        } else {
-            setFoundProduct(data);
-        }
-    } catch (err) {
-        setErrorMsg("Bağlantı hatası oluştu.");
-    } finally {
-        setSearchLoading(false);
-    }
-  };
-
-  const handleBuy = (productName: string) => {
-    alert(`"${productName}" için talep oluşturuldu! Yöneticiler iletişime geçecek.`);
-  };
-
-  // --- 1. GENEL BAKIŞ ---
-  if (activeTab === 'overview') {
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-8">
-        <div><h1 className="text-3xl font-bold">Hoş Geldiniz</h1><p className="text-muted-foreground">Kontrol paneli.</p></div>
-        <div className="grid md:grid-cols-3 gap-6">
-           <Card className="border-purple-500/20"><CardHeader className="pb-2"><CardTitle className="text-sm text-muted-foreground">Aktif İşler</CardTitle></CardHeader><CardContent><div className="text-3xl font-bold">0</div></CardContent></Card>
-        </div>
-      </motion.div>
-    );
-  }
-
-  // --- 2. SİPARİŞ ARAMA (YENİ KOD SİSTEMİ) ---
-  if (activeTab === 'tracking') {
-    return (
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-8 space-y-6">
-        <div>
-            <h2 className="text-2xl font-bold flex items-center gap-2"><Search className="w-6 h-6 text-purple-500"/> Ürün & Sipariş Arama</h2>
-            <p className="text-muted-foreground">Size verilen özel ürün kodunu girin.</p>
-        </div>
-        
-        <Card className="border-purple-500/20">
-            <CardContent className="pt-6">
-                <form onSubmit={handleSearch} className="flex gap-4 max-w-lg mb-4">
-                    <Input 
-                        placeholder="Örn: xk92-mpsl-10kd" 
-                        className="bg-background font-mono"
-                        value={searchCode}
-                        onChange={(e) => setSearchCode(e.target.value)}
-                    />
-                    <Button type="submit" disabled={searchLoading} className="bg-purple-600 hover:bg-purple-700">
-                        {searchLoading ? <Loader2 className="animate-spin w-4 h-4"/> : "Sorgula"}
-                    </Button>
-                </form>
-
-                {errorMsg && (
-                    <div className="p-4 bg-red-500/10 text-red-500 rounded-lg flex items-center gap-2 text-sm">
-                        <AlertCircle className="w-4 h-4"/> {errorMsg}
-                    </div>
-                )}
-
-                {foundProduct && (
-                    <motion.div 
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="mt-6 border rounded-xl overflow-hidden bg-gradient-to-br from-purple-500/5 to-blue-500/5"
-                    >
-                        <div className="p-6 flex flex-col md:flex-row justify-between items-center gap-4">
-                            <div>
-                                <h3 className="text-xl font-bold flex items-center gap-2">
-                                    {foundProduct.name}
-                                    <span className="text-xs px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-600 rounded-full">
-                                        {foundProduct.category}
-                                    </span>
-                                </h3>
-                                <p className="text-muted-foreground mt-1 flex items-center gap-2">
-                                    Kod: <code className="bg-secondary px-1 rounded">{foundProduct.product_code}</code>
-                                </p>
-                            </div>
-                            <div className="text-right">
-                                <div className="text-2xl font-bold text-purple-600">₺{foundProduct.price?.toLocaleString()}</div>
-                                <p className="text-xs text-muted-foreground">+ KDV</p>
-                            </div>
-                        </div>
-                        <div className="bg-secondary/30 p-4 flex justify-end gap-3 border-t">
-                            <Button onClick={() => handleBuy(foundProduct.name)} className="bg-green-600 hover:bg-green-700 w-full md:w-auto">
-                                <ShoppingCart className="w-4 h-4 mr-2"/> Satın Al
-                            </Button>
-                        </div>
-                    </motion.div>
-                )}
-            </CardContent>
-        </Card>
-      </motion.div>
-    );
-  }
-
-  return <div className="p-8">Yükleniyor...</div>;
-}
+import { useEffect, useState } from 'react'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Activity, Clock, CheckCircle, Plus } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
 export default function DashboardPage() {
+  const [profile, setProfile] = useState<any>(null)
+  const supabase = createClientComponentClient()
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single()
+        setProfile(data)
+      }
+    }
+    getProfile()
+  }, [supabase])
+
   return (
-    <Suspense fallback={<div className="p-8">Yükleniyor...</div>}>
-      <DashboardContent />
-    </Suspense>
-  );
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold">
+            Hoşgeldin, <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">{profile?.full_name || 'Kullanıcı'}</span> 👋
+          </h1>
+          <p className="text-slate-400 mt-1">İşte otomasyon durumunuzun özeti.</p>
+        </div>
+        <Link href="/dashboard/requests">
+          <Button className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="w-4 h-4 mr-2" /> Yeni Talep Oluştur
+          </Button>
+        </Link>
+      </div>
+
+      {/* Stats Grid */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="bg-zinc-900/50 border-white/5 hover:border-white/10 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-400">Aktif Projeler</CardTitle>
+            <Activity className="h-4 w-4 text-purple-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-white">3</div>
+            <p className="text-xs text-slate-500 mt-1">+1 geçen aydan beri</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-zinc-900/50 border-white/5 hover:border-white/10 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-400">Bekleyen Talepler</CardTitle>
+            <Clock className="h-4 w-4 text-orange-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-white">1</div>
+            <p className="text-xs text-slate-500 mt-1">İşleme alındı</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-zinc-900/50 border-white/5 hover:border-white/10 transition-all">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-slate-400">Tamamlanan İşler</CardTitle>
+            <CheckCircle className="h-4 w-4 text-green-400" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-white">12</div>
+            <p className="text-xs text-slate-500 mt-1">Bu yıl toplam</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Recent Activity (Placeholder) */}
+      <Card className="bg-zinc-900/50 border-white/5">
+        <CardHeader>
+          <CardTitle>Son Aktiviteler</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {[1, 2, 3].map((_, i) => (
+              <div key={i} className="flex items-center gap-4 p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
+                <div className="w-2 h-2 rounded-full bg-purple-500" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-white">Yeni otomasyon akışı oluşturuldu</p>
+                  <p className="text-xs text-slate-500">2 saat önce</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
 }

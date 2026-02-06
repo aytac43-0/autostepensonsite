@@ -1,89 +1,115 @@
-"use client";
+'use client'
 
-import { motion } from "framer-motion";
-import { LayoutDashboard, Workflow, PlusCircle, LogOut, Zap } from "lucide-react";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
+import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Zap,
+  ShoppingBag,
+  LogOut,
+  Settings,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useRouter } from 'next/navigation'
 
-const navItems = [
-  {
-    name: "Overview",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    name: "My Automations",
-    href: "/dashboard/automations",
-    icon: Workflow,
-  },
-  {
-    name: "New Request",
-    href: "/dashboard/request",
-    icon: PlusCircle,
-  },
-];
+const sidebarItems = [
+  { icon: LayoutDashboard, label: 'Genel Bakış', href: '/dashboard' },
+  { icon: FolderKanban, label: 'Projeler', href: '/dashboard/projects' },
+  { icon: Zap, label: 'Talepler', href: '/dashboard/requests' },
+  { icon: ShoppingBag, label: 'Ürün Sorgula', href: '/dashboard/products' },
+]
 
 export function Sidebar() {
-  const pathname = usePathname();
-  const router = useRouter();
+  const [collapsed, setCollapsed] = useState(false)
+  const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClientComponentClient()
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-  };
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
 
   return (
-    <motion.aside
-      initial={{ x: -300 }}
-      animate={{ x: 0 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-      className="fixed left-0 top-0 h-screen w-64 bg-card/50 backdrop-blur-sm border-r border-border flex flex-col"
+    <aside
+      className={cn(
+        "h-screen bg-zinc-950 border-r border-white/5 transition-all duration-300 relative flex flex-col",
+        collapsed ? "w-20" : "w-64"
+      )}
     >
-      <div className="p-6">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-            <Zap className="w-6 h-6 text-white" />
+      {/* Logo Area */}
+      <div className="h-20 flex items-center justify-center border-b border-white/5">
+        <Link href="/dashboard" className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold">
+            AS
           </div>
-          <span className="text-xl font-bold">Autostep</span>
+          {!collapsed && (
+            <span className="font-bold text-lg bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
+              Autostep
+            </span>
+          )}
         </Link>
       </div>
 
-      <nav className="flex-1 px-4 space-y-2">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
+      {/* Navigation */}
+      <nav className="flex-1 p-4 space-y-2">
+        {sidebarItems.map((item) => {
+          const isActive = pathname === item.href
 
           return (
-            <Link key={item.href} href={item.href}>
-              <motion.div
-                whileHover={{ scale: 1.02, x: 5 }}
-                whileTap={{ scale: 0.98 }}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                  isActive
-                    ? "bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/50 text-purple-300"
-                    : "text-gray-400 hover:text-gray-200 hover:bg-secondary"
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span className="font-medium">{item.name}</span>
-              </motion.div>
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-3 px-3 py-3 rounded-xl transition-all group relative",
+                isActive
+                  ? "bg-white/10 text-white shadow-lg shadow-purple-500/10"
+                  : "text-slate-400 hover:bg-white/5 hover:text-white"
+              )}
+            >
+              <item.icon className={cn("w-5 h-5", isActive ? "text-purple-400" : "text-slate-500 group-hover:text-purple-400")} />
+
+              {!collapsed && (
+                <span className="font-medium">{item.label}</span>
+              )}
+
+              {/* Active Indicator */}
+              {isActive && (
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-purple-500 rounded-r-full" />
+              )}
             </Link>
-          );
+          )
         })}
       </nav>
 
-      <div className="p-4 border-t border-border">
+      {/* Footer / Logout */}
+      <div className="p-4 border-t border-white/5">
         <Button
-          onClick={handleLogout}
           variant="ghost"
-          className="w-full justify-start text-gray-400 hover:text-red-400"
+          className={cn(
+            "w-full flex items-center gap-2 justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10",
+            collapsed && "justify-center px-0"
+          )}
+          onClick={handleLogout}
         >
-          <LogOut className="w-5 h-5 mr-3" />
-          Logout
+          <LogOut className="w-5 h-5" />
+          {!collapsed && <span>Çıkış Yap</span>}
         </Button>
       </div>
-    </motion.aside>
-  );
+
+      {/* Collapse Toggle */}
+      <button
+        onClick={() => setCollapsed(!collapsed)}
+        className="absolute -right-3 top-24 w-6 h-6 bg-zinc-900 border border-white/10 rounded-full flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+      >
+        {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+      </button>
+    </aside>
+  )
 }

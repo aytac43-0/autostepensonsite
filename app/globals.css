@@ -4,26 +4,41 @@
 
 @layer base {
   :root {
-    --background: 222 47% 4%;
-    --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222 47% 6%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 263 70% 50%;
+    --background: 240 10% 3.9%; /* Zinc-950 equivalent */
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 5%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 263.4 70% 50.4%; /* Deep Purple/Blue */
     --primary-foreground: 210 40% 98%;
-    --secondary: 217 33% 17%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217 33% 17%;
-    --muted-foreground: 215 20% 65%;
-    --accent: 217 33% 17%;
-    --accent-foreground: 210 40% 98%;
+
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 263 70% 50%;
-    --radius: 0.5rem;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    /* ... same as root since we force dark mode vibes mostly */
   }
 }
 
@@ -32,84 +47,42 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
-    /* Koyu tema degrade arka plan */
-    background: linear-gradient(to bottom, #0a0a0f 0%, #111827 100%);
+    @apply bg-zinc-950 text-foreground font-sans antialiased selection:bg-purple-500/30 selection:text-purple-200;
+    /* Add a subtle mesh gradient background */
+    background-image: 
+      radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+      radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+      radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+    background-attachment: fixed;
   }
 }
 
-@layer utilities {
-  .gradient-text {
-    @apply bg-gradient-to-r from-purple-400 via-violet-400 to-blue-400 bg-clip-text text-transparent;
-  }
-
-  .gradient-border {
-    border-image: linear-gradient(to right, rgb(168, 85, 247), rgb(59, 130, 246)) 1;
-  }
-
-  .glow-purple {
-    box-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
-  }
-
-  .glow-blue {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
-  }
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-zinc-950;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-800 rounded-full hover:bg-zinc-700 transition-colors;
 }
 
-/* --- OTOMASYON ARKA PLAN ANİMASYONU --- */
-/* (Bileşen yüklenmezse yedek olarak çalışır) */
-
-.network-grid-bg {
-  background-size: 50px 50px;
-  background-image: 
-    radial-gradient(circle, rgba(79, 70, 229, 0.2) 1px, transparent 1px);
-  animation: moveBackground 40s linear infinite;
+/* Glassmorphism Utilities */
+.glass {
+  @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-xl;
 }
 
-.network-grid-lines {
-  background-size: 60px 60px;
-  background-image: 
-    linear-gradient(to right, rgba(124, 58, 237, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(124, 58, 237, 0.05) 1px, transparent 1px);
-  animation: moveLines 30s linear infinite reverse;
+.glass-card {
+  @apply bg-zinc-900/40 backdrop-blur-md border border-white/5 hover:border-white/10 transition-all duration-300;
 }
 
-@keyframes moveBackground {
-  0% { background-position: 0 0; }
-  100% { background-position: 50px 50px; }
+/* Text Gradients */
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400;
 }
 
-@keyframes moveLines {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(60px); }
-}
-
-.pulse-glow {
-  animation: pulseGlow 8s ease-in-out infinite;
-}
-
-@keyframes pulseGlow {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 0.6; }
-}
-
-/* --- 3D LOGO DÖNME ANİMASYONU (YENİ) --- */
-/* Logonun kendi ekseni etrafında (Y ekseni) takla atmasını sağlar */
-
-@keyframes spin-3d-y {
-  from {
-    transform: rotateY(0deg);
-  }
-  to {
-    transform: rotateY(360deg);
-  }
-}
-
-.animate-spin-3d {
-  /* 8 saniyede bir tam tur atar */
-  animation: spin-3d-y 8s linear infinite;
-  /* Dönüş sırasında arka yüzünün de görünmesini sağlar */
-  backface-visibility: visible;
-  /* 3D derinlik koruması */
-  transform-style: preserve-3d;
+/* Neon Glows */
+.neon-glow {
+  box-shadow: 0 0 20px -5px rgba(139, 92, 246, 0.5);
 }
